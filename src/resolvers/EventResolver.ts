@@ -5,7 +5,8 @@ import { Event } from "../entity/Event";
 export class EventResolver {
   @Query(() => [Event])
   events() {
-    return Event.find();
+    const events = Event.find({ where: { visible: true } });
+    return events;
   }
 
   @Mutation(() => Boolean)

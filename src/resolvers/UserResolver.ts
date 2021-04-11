@@ -17,11 +17,14 @@ import {
   isAuth,
   sendRefreshToken,
 } from "../utils/auth";
+import { verify } from "jsonwebtoken";
 
 @ObjectType()
 class LoginResponse {
   @Field()
   accessToken: string;
+  @Field(() => User)
+  user: User;
 }
 
 @Resolver()
@@ -34,6 +37,24 @@ export class UserResolver {
   @Query(() => [User])
   users() {
     return User.find();
+  }
+
+  @Query(() => User, { nullable: true })
+  @UseMiddleware(isAuth)
+  me(@Ctx() context: MyContext) {
+    const authorization = context.req.headers["authorization"];
+
+    if (!authorization) return null;
+
+    try {
+      const token = authorization.split(" ")[1];
+      const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+      const user = User.findOne(payload.userId);
+      return user;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   }
 
   @Query(() => String)
@@ -66,6 +87,12 @@ export class UserResolver {
     return true;
   }
 
+  @Mutation(() => Boolean)
+  async logout(@Ctx() context: MyContext) {
+    sendRefreshToken(context.res, "");
+    return true;
+  }
+
   @Mutation(() => LoginResponse)
   async login(
     @Arg("email") email: string,
@@ -88,6 +115,7 @@ export class UserResolver {
     sendRefreshToken(res, createRefreshToken(user));
     return {
       accessToken: createAccessToken(user),
+      user,
     };
   }
 }

@@ -22,6 +22,7 @@ export const createRefreshToken = (user: User) => {
 };
 
 export const isAuth: Middleware<MyContext> = ({ context }, next) => {
+  console.log(context.req.headers);
   const authorization = context.req.headers["authorization"];
 
   if (!authorization) {
@@ -41,6 +42,7 @@ export const isAuth: Middleware<MyContext> = ({ context }, next) => {
 export const sendRefreshToken = (res: Response, token: string) => {
   res.cookie("jid", token, {
     httpOnly: true,
+    path: "/refresh_token",
   });
 };
 
