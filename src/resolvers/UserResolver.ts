@@ -17,7 +17,6 @@ import {
   isAuth,
   sendRefreshToken,
 } from "../utils/auth";
-import { verify } from "jsonwebtoken";
 
 @ObjectType()
 class LoginResponse {
@@ -41,26 +40,13 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   @UseMiddleware(isAuth)
-  me(@Ctx() context: MyContext) {
-    const authorization = context.req.headers["authorization"];
-
-    if (!authorization) return null;
-
-    try {
-      const token = authorization.split(" ")[1];
-      const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
-      const user = User.findOne(payload.userId);
-      return user;
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
+  me(@Ctx() { payload }: MyContext) {
+    return User.findOne(payload?.userId);
   }
 
   @Query(() => String)
   @UseMiddleware(isAuth)
   bye(@Ctx() { payload }: MyContext) {
-    console.log(payload);
     return "your user id is: " + payload?.userId;
   }
 
@@ -72,7 +58,6 @@ export class UserResolver {
     @Arg("lastName") lastName: string
   ) {
     const hashedPassword = await hash(password, 12);
-
     try {
       await User.insert({
         email,

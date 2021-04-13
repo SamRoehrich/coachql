@@ -4,6 +4,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
+  JoinColumn,
+  OneToOne,
   ManyToMany,
   JoinTable,
 } from "typeorm";
@@ -11,38 +13,23 @@ import { Athlete } from "./Athlete";
 import { User } from "./User";
 
 @ObjectType()
-@Entity("events")
-export class Event extends BaseEntity {
+@Entity("teams")
+export class Team extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
-  @Column()
-  name: string;
-
-  @Field()
-  @Column()
-  location: string;
-
-  @Field()
-  @Column()
-  visible: boolean;
-
-  @Field()
-  @Column({})
-  startDate: string;
-
-  @Field()
-  @Column({ default: false })
-  started: boolean;
-
   @Field(() => User)
-  @ManyToMany(() => User)
-  @JoinTable()
-  creator: User;
+  @OneToOne(() => User)
+  @JoinColumn()
+  headCoach: User;
+
+  @Field()
+  @Column()
+  teamName: string;
 
   @Field(() => [Athlete])
+  @ManyToMany(() => Athlete)
   @JoinTable()
-  athletes: Athlete;
+  athletes: Athlete[];
 }

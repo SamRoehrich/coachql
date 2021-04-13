@@ -22,7 +22,6 @@ export const createRefreshToken = (user: User) => {
 };
 
 export const isAuth: Middleware<MyContext> = ({ context }, next) => {
-  console.log(context.req.headers);
   const authorization = context.req.headers["authorization"];
 
   if (!authorization) {
@@ -31,6 +30,7 @@ export const isAuth: Middleware<MyContext> = ({ context }, next) => {
 
   try {
     const token = authorization?.split(" ")[1];
+    if (token === undefined) return next();
     const payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
     context.payload = payload as any;
   } catch (err) {

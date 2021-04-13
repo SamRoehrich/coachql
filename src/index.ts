@@ -16,6 +16,7 @@ import {
   revokeRefreshTokenForUser,
   sendRefreshToken,
 } from "./utils/auth";
+import { TeamResolver } from "./resolvers/TeamResolver";
 
 (async () => {
   const app = express();
@@ -78,7 +79,7 @@ import {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, EventResolver],
+      resolvers: [UserResolver, EventResolver, TeamResolver],
     }),
     context: ({ req, res }) => ({ req, res }),
   });
