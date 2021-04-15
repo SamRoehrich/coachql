@@ -4,14 +4,14 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  JoinColumn,
   OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { User } from "./User";
 
 @ObjectType()
-@Entity("athletes")
-export class Athlete extends BaseEntity {
+@Entity("boudlers")
+export class Boulder extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
   id: number;
@@ -19,13 +19,13 @@ export class Athlete extends BaseEntity {
   @Field(() => User)
   @OneToOne(() => User)
   @JoinColumn()
-  user: User;
+  scoreKeeper: User;
 
   @Field(() => Int)
   @Column()
-  age: number;
+  boulderNumber: number;
 
   @Field()
   @Column()
-  team: string;
+  catagory: string;
 }

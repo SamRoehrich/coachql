@@ -8,6 +8,7 @@ import {
   JoinTable,
 } from "typeorm";
 import { Athlete } from "./Athlete";
+import { Boulder } from "./Boulder";
 import { User } from "./User";
 
 @ObjectType()
@@ -18,7 +19,7 @@ export class Event extends BaseEntity {
   id: number;
 
   @Field()
-  @Column()
+  @Column({})
   name: string;
 
   @Field()
@@ -42,7 +43,11 @@ export class Event extends BaseEntity {
   @JoinTable()
   creator: User;
 
-  @Field(() => [Athlete])
+  @Field(() => [Athlete], { nullable: true })
+  @ManyToMany(() => Athlete)
   @JoinTable()
-  athletes: Athlete;
+  athletes: Athlete[];
+
+  @Field(() => [Boulder])
+  boulders: Boulder[];
 }

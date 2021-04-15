@@ -17,6 +17,7 @@ import {
   sendRefreshToken,
 } from "./utils/auth";
 import { TeamResolver } from "./resolvers/TeamResolver";
+import { AthleteResolver } from "./resolvers/AthleteResolver";
 
 (async () => {
   const app = express();
@@ -28,6 +29,7 @@ import { TeamResolver } from "./resolvers/TeamResolver";
     })
   );
   app.post("/refresh_token", async (req, res) => {
+    console.log("refresh called");
     const token = req.cookies.jid;
     if (!token) {
       return res.send({ ok: false, accessToken: "" });
@@ -79,7 +81,7 @@ import { TeamResolver } from "./resolvers/TeamResolver";
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, EventResolver, TeamResolver],
+      resolvers: [UserResolver, EventResolver, TeamResolver, AthleteResolver],
     }),
     context: ({ req, res }) => ({ req, res }),
   });
