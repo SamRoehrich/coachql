@@ -18,6 +18,7 @@ import {
 } from "./utils/auth";
 import { TeamResolver } from "./resolvers/TeamResolver";
 import { AthleteResolver } from "./resolvers/AthleteResolver";
+import { StackResolver } from "./resolvers/StackResolver";
 
 (async () => {
   const app = express();
@@ -81,7 +82,13 @@ import { AthleteResolver } from "./resolvers/AthleteResolver";
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, EventResolver, TeamResolver, AthleteResolver],
+      resolvers: [
+        UserResolver,
+        EventResolver,
+        TeamResolver,
+        AthleteResolver,
+        StackResolver,
+      ],
     }),
     context: ({ req, res }) => ({ req, res }),
   });

@@ -6,9 +6,10 @@ import {
   BaseEntity,
   ManyToMany,
   JoinTable,
+  OneToMany,
+  ManyToOne,
 } from "typeorm";
 import { Athlete } from "./Athlete";
-import { Boulder } from "./Boulder";
 import { User } from "./User";
 import { Stack } from "./Stack";
 
@@ -40,8 +41,10 @@ export class Event extends BaseEntity {
   started: boolean;
 
   @Field(() => User)
-  @ManyToMany(() => User)
-  @JoinTable()
+  @ManyToOne(
+    () => User,
+    (user) => user.id
+  )
   creator: User;
 
   @Field(() => [Athlete], { nullable: true })
@@ -49,9 +52,10 @@ export class Event extends BaseEntity {
   @JoinTable()
   athletes: Athlete[];
 
-  @Field(() => [Boulder])
-  boulders: Boulder[];
-
   @Field(() => [Stack], { nullable: true })
+  @OneToMany(
+    () => Stack,
+    (stack) => stack.event
+  )
   stacks: Stack[];
 }

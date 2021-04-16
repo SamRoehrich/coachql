@@ -34,11 +34,16 @@ export class EventResolver {
       .relation(Athlete, "user")
       .of(athletes)
       .loadMany();
-
+    const creator = await getConnection()
+      .createQueryBuilder()
+      .relation(Event, "creator")
+      .of(event)
+      .loadOne();
     for (let i in athletes) {
       athletes[i].user = users[i];
     }
     event!.athletes = athletes;
+    event!.creator = creator;
     return event;
   }
 

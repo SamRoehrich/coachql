@@ -1,5 +1,12 @@
 import { Field, Int, ObjectType } from "type-graphql";
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  ManyToOne,
+} from "typeorm";
+import { Event } from "./Event";
 
 @ObjectType()
 @Entity("stacks")
@@ -35,4 +42,11 @@ export class Stack extends BaseEntity {
   @Field()
   @Column()
   d: boolean;
+
+  @ManyToOne(
+    () => Event,
+    (hostEvent) => hostEvent.id
+  )
+  @Field(() => Event)
+  event: Event;
 }
