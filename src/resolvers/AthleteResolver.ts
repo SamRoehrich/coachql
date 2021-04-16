@@ -1,13 +1,20 @@
 import { hash } from "bcryptjs";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { getConnection } from "typeorm";
 import { Athlete } from "../entity/Athlete";
 import { User } from "../entity/User";
+import { Event } from "../entity/Event";
 
 @Resolver()
 export class AthleteResolver {
   @Query(() => [Athlete])
-  athletes() {
-    const athletes = Athlete.find();
+  async athletes(@Arg("eventId") eventId: string) {
+    const event = await Event.findOne(eventId);
+    const athletes = await getConnection()
+      .createQueryBuilder()
+      .relation(Athlete, "user")
+      .of(event)
+      .loadMany();
     return athletes;
   }
 

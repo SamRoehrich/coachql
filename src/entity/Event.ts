@@ -10,6 +10,7 @@ import {
 import { Athlete } from "./Athlete";
 import { Boulder } from "./Boulder";
 import { User } from "./User";
+import { Stack } from "./Stack";
 
 @ObjectType()
 @Entity("events")
@@ -50,4 +51,7 @@ export class Event extends BaseEntity {
 
   @Field(() => [Boulder])
   boulders: Boulder[];
+
+  @Field(() => [Stack], { nullable: true })
+  stacks: Stack[];
 }
