@@ -6,11 +6,10 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
-import { getConnection } from "typeorm";
-import { Event } from "../entity/Event";
 import { Stack } from "../entity/Stack";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
+import { EventResolver } from "./EventResolver";
 
 @Resolver()
 export class StackResolver {
@@ -33,26 +32,30 @@ export class StackResolver {
     @Arg("d") d: boolean,
     @Ctx() { payload }: MyContext
   ) {
-    const event = await Event.findOne({ where: { id: eventId } });
-    const creator = await getConnection()
-      .createQueryBuilder()
-      .relation(Event, "creator")
-      .of(event)
-      .loadOne();
-    event!.creator = creator;
-    if (event?.creator.id === payload?.userId) {
-      await Stack.insert({
-        event,
-        a,
-        b,
-        c,
-        d,
-        jr,
-        male,
-        female,
-      });
-      return true;
+    const eventResolver = new EventResolver();
+    const event = await eventResolver.event(eventId);
+    if (event === "Event not found.") {
+      console.log("event not found");
+      return false;
+    } else if (event) {
+      if (event!.creator.id === payload!.userId) {
+        await Stack.insert({
+          event,
+          a,
+          b,
+          c,
+          d,
+          jr,
+          male,
+          female,
+        });
+        return true;
+      } else {
+        console.log("id's did not match");
+        return false;
+      }
     } else {
+      console.log("you should not see me");
       return false;
     }
   }

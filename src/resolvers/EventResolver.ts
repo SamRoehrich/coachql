@@ -38,27 +38,37 @@ export class EventResolver {
   @Query(() => Event)
   async event(@Arg("eventId") eventId: string) {
     const event = await getConnection().manager.findOne(Event, eventId);
-    const athletes: Athlete[] = await getConnection()
-      .createQueryBuilder()
-      .relation(Event, "athletes")
-      .of(event)
-      .loadMany();
-    const users: User[] = await getConnection()
-      .createQueryBuilder()
-      .relation(Athlete, "user")
-      .of(athletes)
-      .loadMany();
-    const creator = await getConnection()
-      .createQueryBuilder()
-      .relation(Event, "creator")
-      .of(event)
-      .loadOne();
-    for (let i in athletes) {
-      athletes[i].user = users[i];
+    if (event) {
+      const creator = await getConnection()
+        .createQueryBuilder()
+        .relation(Event, "creator")
+        .of(event)
+        .loadOne();
+      event.creator = creator;
+      const athletes: Athlete[] = await getConnection()
+        .createQueryBuilder()
+        .relation(Event, "athletes")
+        .of(event)
+        .loadMany();
+      if (athletes.length === 0) {
+        return event;
+      } else {
+        const users: User[] = await getConnection()
+          .createQueryBuilder()
+          .relation(Athlete, "user")
+          .of(athletes)
+          .loadMany();
+        let i = 0;
+        while (i < athletes.length) {
+          athletes[i].user = users[i];
+          i++;
+        }
+        event.athletes = athletes;
+        return event;
+      }
+    } else {
+      return "Event not found.";
     }
-    event!.athletes = athletes;
-    event!.creator = creator;
-    return event;
   }
 
   @Query(() => [Event])
