@@ -19,6 +19,7 @@ import {
 import { TeamResolver } from "./resolvers/TeamResolver";
 import { AthleteResolver } from "./resolvers/AthleteResolver";
 import { StackResolver } from "./resolvers/StackResolver";
+import { BoulderResolver } from "./resolvers/BoulderResolver";
 
 (async () => {
   const app = express();
@@ -88,6 +89,7 @@ import { StackResolver } from "./resolvers/StackResolver";
         TeamResolver,
         AthleteResolver,
         StackResolver,
+        BoulderResolver,
       ],
     }),
     context: ({ req, res }) => ({ req, res }),

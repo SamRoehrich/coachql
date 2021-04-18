@@ -40,11 +40,12 @@ export class Event extends BaseEntity {
   @Column({ default: false })
   started: boolean;
 
+  @Field(() => Int)
+  @Column({ nullable: true })
+  numBoulders: number;
+
   @Field(() => User)
-  @ManyToOne(
-    () => User,
-    (user) => user.id
-  )
+  @ManyToOne(() => User, (user) => user.id)
   creator: User;
 
   @Field(() => [Athlete], { nullable: true })
@@ -53,9 +54,6 @@ export class Event extends BaseEntity {
   athletes: Athlete[];
 
   @Field(() => [Stack], { nullable: true })
-  @OneToMany(
-    () => Stack,
-    (stack) => stack.event
-  )
+  @OneToMany(() => Stack, (stack) => stack.event)
   stacks: Stack[];
 }

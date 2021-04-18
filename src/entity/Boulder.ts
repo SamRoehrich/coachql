@@ -6,7 +6,9 @@ import {
   BaseEntity,
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from "typeorm";
+import { Stack } from "./Stack";
 import { User } from "./User";
 
 @ObjectType()
@@ -25,7 +27,6 @@ export class Boulder extends BaseEntity {
   @Column()
   boulderNumber: number;
 
-  @Field()
-  @Column()
-  catagory: string;
+  @ManyToOne(() => Stack, (stack) => stack.id)
+  stackId: number;
 }
