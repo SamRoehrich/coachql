@@ -17,7 +17,21 @@ import { getConnection } from "typeorm";
 export class EventResolver {
   @Query(() => [Event])
   async events() {
-    const events = await Event.find({ where: { visible: true } });
+    const events: Event[] = await getConnection().manager.find(Event);
+    let i = 0;
+    while (i < events.length) {
+      const creator = await getConnection()
+        .createQueryBuilder()
+        .relation(Event, "creator")
+        .of(events[i])
+        .loadOne();
+      if (creator) {
+        events[i].creator = creator;
+      } else {
+        return [];
+      }
+      i++;
+    }
     return events;
   }
 
