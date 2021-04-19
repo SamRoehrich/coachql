@@ -6,6 +6,7 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
+import { Boulder } from "../entity/Boulder";
 import { Stack } from "../entity/Stack";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
@@ -39,7 +40,8 @@ export class StackResolver {
       return false;
     } else if (event) {
       if (event!.creator.id === payload!.userId) {
-        await Stack.insert({
+        let i = 1;
+        const stack = await Stack.insert({
           event,
           a,
           b,
@@ -49,7 +51,22 @@ export class StackResolver {
           male,
           female,
         });
-        return true;
+        if (stack) {
+          while (i < event.numBoulders + 1) {
+            await Boulder.insert({
+              boulderNumber: i,
+              stackId: stack.identifiers[0].id,
+            });
+            i++;
+          }
+          if (i === event.numBoulders + 1) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
       } else {
         console.log("id's did not match");
         return false;

@@ -85,6 +85,7 @@ export class EventResolver {
     @Arg("location") location: string,
     @Arg("visible") visible: boolean,
     @Arg("startDate") startDate: string,
+    @Arg("numBoulders") numBoulders: number,
     @Ctx() { payload }: MyContext
   ) {
     try {
@@ -95,6 +96,7 @@ export class EventResolver {
         visible,
         startDate,
         creator,
+        numBoulders,
       });
     } catch (err) {
       console.log(err);
