@@ -55,7 +55,7 @@ export class StackResolver {
           while (i < event.numBoulders + 1) {
             await Boulder.insert({
               boulderNumber: i,
-              stackId: stack.identifiers[0].id,
+              stack: stack.identifiers[0].id,
             });
             i++;
           }

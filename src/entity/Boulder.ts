@@ -27,6 +27,7 @@ export class Boulder extends BaseEntity {
   @Column()
   boulderNumber: number;
 
+  @Field(() => Stack)
   @ManyToOne(() => Stack, (stack) => stack.id)
-  stackId: number;
+  stack: number;
 }
