@@ -40,7 +40,6 @@ export class StackResolver {
       return false;
     } else if (event) {
       if (event!.creator.id === payload!.userId) {
-        let i = 1;
         const stack = await Stack.insert({
           event,
           a,
@@ -52,6 +51,7 @@ export class StackResolver {
           female,
         });
         if (stack) {
+          let i = 1;
           while (i < event.numBoulders + 1) {
             await Boulder.insert({
               boulderNumber: i,
@@ -62,9 +62,11 @@ export class StackResolver {
           if (i === event.numBoulders + 1) {
             return true;
           } else {
+            console.log("Could not create all the boulders");
             return false;
           }
         } else {
+          console.log("Failed to create stack");
           return false;
         }
       } else {
