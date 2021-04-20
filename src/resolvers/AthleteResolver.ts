@@ -4,8 +4,8 @@ import { getConnection } from "typeorm";
 import { Athlete } from "../entity/Athlete";
 import { User } from "../entity/User";
 import { Event } from "../entity/Event";
-import { getAgeCatagory } from "../utils/athlete";
-import { isFemale } from "../utils/stack";
+// import { getAgeCatagory } from "../utils/athlete";
+// import { isFemale } from "../utils/stack";
 
 @Resolver()
 export class AthleteResolver {
@@ -68,18 +68,11 @@ export class AthleteResolver {
         .of(event)
         .loadMany();
       // TODO: Add Athlete To Stack
-      const catagory = getAgeCatagory(athlete.birthYear);
-      //female
-      if (athlete.female) {
-        console.log(catagory);
-        console.log(athlete);
-        const possibleStacks = event.stacks.map((stack) => isFemale(stack));
-        let i = 0;
-        while (i < possibleStacks.length) {
-          console.log(possibleStacks[i]);
-          i++;
-        }
-      }
+      // const catagory = getAgeCatagory(athlete.birthYear);
+      // //female
+      // if (athlete.female) {
+
+      // }
     } else {
       return false;
     }
