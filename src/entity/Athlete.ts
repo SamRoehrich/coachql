@@ -16,6 +16,14 @@ export class Athlete extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field(() => Boolean)
+  @Column({ default: false })
+  male: boolean;
+
+  @Field(() => Boolean)
+  @Column({ default: false })
+  female: boolean;
+
   @Field(() => User)
   @OneToOne(() => User)
   @JoinColumn()
@@ -23,7 +31,7 @@ export class Athlete extends BaseEntity {
 
   @Field(() => Int)
   @Column()
-  age: number;
+  birthYear: number;
 
   @Field()
   @Column()
