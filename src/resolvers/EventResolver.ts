@@ -73,7 +73,7 @@ export class EventResolver {
 
   @Query(() => [Event])
   @UseMiddleware(isAuth)
-  async authEvents(@Ctx() context: MyContext) {
+  async getAuthenticatedEvents(@Ctx() context: MyContext) {
     const user = await User.findOne(context.payload?.userId);
     return await Event.find({ where: { creator: user } });
   }
