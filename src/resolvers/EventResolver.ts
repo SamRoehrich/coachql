@@ -75,7 +75,18 @@ export class EventResolver {
   @UseMiddleware(isAuth)
   async getAuthenticatedEvents(@Ctx() context: MyContext) {
     const user = await User.findOne(context.payload?.userId);
-    return await Event.find({ where: { creator: user } });
+    const events = await Event.find({ where: { creator: user } });
+    const creators = await getConnection()
+      .createQueryBuilder()
+      .relation(Event, "creator")
+      .of(events)
+      .loadMany();
+    let i = 0;
+    while (i < events.length) {
+      events[i].creator = creators[i];
+      i++;
+    }
+    return events;
   }
 
   @Mutation(() => Boolean)
