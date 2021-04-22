@@ -6,6 +6,7 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
+import { getConnection } from "typeorm";
 import { Boulder } from "../entity/Boulder";
 import { Stack } from "../entity/Stack";
 import { MyContext } from "../types/MyContext";
@@ -53,10 +54,15 @@ export class StackResolver {
         if (stack) {
           let i = 1;
           while (i < event.numBoulders + 1) {
-            await Boulder.insert({
+            const boulder = await Boulder.insert({
               boulderNumber: i,
               stack: stack.identifiers[0].id,
             });
+            await getConnection()
+              .createQueryBuilder()
+              .relation(Stack, "boulders")
+              .of(stack)
+              .set(boulder);
             i++;
           }
           if (i === event.numBoulders + 1) {

@@ -7,6 +7,7 @@ import {
   ManyToOne,
 } from "typeorm";
 import { Athlete } from "./Athlete";
+import { Boulder } from "./Boulder";
 import { Event } from "./Event";
 
 @ObjectType()
@@ -51,4 +52,8 @@ export class Stack extends BaseEntity {
   @ManyToOne(() => Athlete, (athlete) => athlete.id)
   @Field(() => [Athlete])
   athletes: Athlete[];
+
+  @ManyToOne(() => Boulder, (boulder) => boulder.id)
+  @Field(() => [Boulder])
+  boulders: Boulder[];
 }

@@ -50,6 +50,14 @@ export class EventResolver {
         .relation(Event, "athletes")
         .of(event)
         .loadMany();
+      const stacks = await getConnection()
+        .createQueryBuilder()
+        .relation(Event, "stacks")
+        .of(event)
+        .loadMany();
+      if (stacks.length > 0) {
+        event.stacks = stacks;
+      }
       if (athletes.length === 0) {
         return event;
       } else {
