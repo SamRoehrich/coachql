@@ -16,8 +16,18 @@ import { EventResolver } from "./EventResolver";
 @Resolver()
 export class StackResolver {
   @Query(() => [Stack])
-  getStacks(@Arg("eventId") eventId: string) {
-    const stacks = Stack.find({ where: { event: { id: eventId } } });
+  async getStacks(@Arg("eventId") eventId: string) {
+    const stacks = await Stack.find({ where: { event: { id: eventId } } });
+    const event = await getConnection()
+      .createQueryBuilder()
+      .relation(Stack, "event")
+      .of(stacks)
+      .loadOne();
+    let i = 0;
+    while (i < stacks.length) {
+      stacks[i].event = event;
+      i++;
+    }
     return stacks;
   }
 
@@ -34,6 +44,7 @@ export class StackResolver {
     @Arg("d") d: boolean,
     @Ctx() { payload }: MyContext
   ) {
+    console.log("create called");
     const eventResolver = new EventResolver();
     const event = await eventResolver.event(eventId);
     if (event === "Event not found.") {

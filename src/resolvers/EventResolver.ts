@@ -18,6 +18,9 @@ export class EventResolver {
   @Query(() => [Event])
   async events() {
     const events: Event[] = await getConnection().manager.find(Event);
+    if (events.length === 0) {
+      return events;
+    }
     let i = 0;
     while (i < events.length) {
       const creator = await getConnection()
@@ -84,14 +87,17 @@ export class EventResolver {
   async getAuthenticatedEvents(@Ctx() context: MyContext) {
     const user = await User.findOne(context.payload?.userId);
     const events = await Event.find({ where: { creator: user } });
-    const creators = await getConnection()
+    if (events.length === 0) {
+      return events;
+    }
+    const creator = await getConnection()
       .createQueryBuilder()
       .relation(Event, "creator")
       .of(events)
-      .loadMany();
+      .loadOne();
     let i = 0;
     while (i < events.length) {
-      events[i].creator = creators[i];
+      events[i].creator = creator;
       i++;
     }
     return events;

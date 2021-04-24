@@ -3,7 +3,7 @@
   "host": "localhost",
   "port": 5432,
   "username": "postgres",
-  "password": "dervish",
+  "password": "root",
   "database": "coachql",
   "synchronize": true,
   "logging": false,
