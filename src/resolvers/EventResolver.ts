@@ -12,6 +12,8 @@ import { User } from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
 import { getConnection } from "typeorm";
+import { Stack } from "../entity/Stack";
+import { Boulder } from "../entity/Boulder";
 
 @Resolver()
 export class EventResolver {
@@ -48,19 +50,19 @@ export class EventResolver {
         .of(event)
         .loadOne();
       event.creator = creator;
+      event.stacks = await Stack.find({ where: { event } });
+      let i = 0;
+      while (i < event.stacks.length) {
+        event.stacks[i].boulders = await Boulder.find({
+          where: { stack: event.stacks[i].id },
+        });
+        i++;
+      }
       const athletes: Athlete[] = await getConnection()
         .createQueryBuilder()
         .relation(Event, "athletes")
         .of(event)
         .loadMany();
-      const stacks = await getConnection()
-        .createQueryBuilder()
-        .relation(Event, "stacks")
-        .of(event)
-        .loadMany();
-      if (stacks.length > 0) {
-        event.stacks = stacks;
-      }
       if (athletes.length === 0) {
         return event;
       } else {
@@ -86,21 +88,18 @@ export class EventResolver {
   @UseMiddleware(isAuth)
   async getAuthenticatedEvents(@Ctx() context: MyContext) {
     const user = await User.findOne(context.payload?.userId);
-    const events = await Event.find({ where: { creator: user } });
-    if (events.length === 0) {
-      return events;
+    const events = await this.events();
+    if (user && events) {
+      const authEvents = events.map((event) => {
+        if (event.creator.id === user.id) {
+          return event;
+        }
+        return null;
+      });
+      console.log(authEvents);
+      return authEvents;
     }
-    const creator = await getConnection()
-      .createQueryBuilder()
-      .relation(Event, "creator")
-      .of(events)
-      .loadOne();
-    let i = 0;
-    while (i < events.length) {
-      events[i].creator = creator;
-      i++;
-    }
-    return events;
+    return false;
   }
 
   @Mutation(() => Boolean)

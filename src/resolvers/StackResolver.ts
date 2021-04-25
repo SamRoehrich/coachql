@@ -18,17 +18,23 @@ export class StackResolver {
   @Query(() => [Stack])
   async getStacks(@Arg("eventId") eventId: string) {
     const stacks = await Stack.find({ where: { event: { id: eventId } } });
-    const event = await getConnection()
-      .createQueryBuilder()
-      .relation(Stack, "event")
-      .of(stacks)
-      .loadOne();
-    let i = 0;
-    while (i < stacks.length) {
-      stacks[i].event = event;
-      i++;
+    if (stacks) {
+      const event = await getConnection()
+        .createQueryBuilder()
+        .relation(Stack, "event")
+        .of(stacks)
+        .loadOne();
+      for (let stack of stacks) {
+        stack.boulders = await getConnection()
+          .createQueryBuilder()
+          .relation(Stack, "boulders")
+          .of(stack)
+          .loadMany();
+        stack.event = event;
+      }
+      return stacks;
     }
-    return stacks;
+    return null;
   }
 
   @Mutation(() => Boolean)
