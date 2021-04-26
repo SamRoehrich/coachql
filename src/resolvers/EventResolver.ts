@@ -14,6 +14,7 @@ import { isAuth } from "../utils/auth";
 import { getConnection } from "typeorm";
 import { Stack } from "../entity/Stack";
 import { Boulder } from "../entity/Boulder";
+import { UserResolver } from "./UserResolver";
 
 @Resolver()
 export class EventResolver {
@@ -131,24 +132,51 @@ export class EventResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
-  async registerAthlete(
-    @Arg("evnetId") eventId: string,
-    @Ctx() { payload }: MyContext
+  async registerForEvent(
+    @Arg("eventId") eventId: string,
+    @Arg("email") email: string,
+    @Arg("password") password: string,
+    @Arg("firstName") firstName: string,
+    @Arg("lastName") lastName: string,
+    @Arg("team") team: string,
+    @Arg("birthYear") birthYear: number,
+    @Arg("female") female: boolean,
+    @Arg("male") male: boolean
   ) {
-    const athlete = await Athlete.findOne({
-      where: { user: { id: payload?.userId } },
-    });
-
-    try {
-      await getConnection()
-        .createQueryBuilder()
-        .relation(Event, "athletes")
-        .of(eventId)
-        .add(athlete);
-      return true;
-    } catch (err) {
-      console.error(err);
-      return false;
+    const userResolver = new UserResolver();
+    const user = await userResolver.internalLogin(email, password);
+    if (user) {
+      const athlete = await Athlete.findOne({ where: { user: user.id } });
+      if (athlete) {
+        await getConnection()
+          .createQueryBuilder()
+          .relation(Event, "athletes")
+          .of(eventId)
+          .add(athlete);
+        return true;
+      }
     }
+    await userResolver.register(email, password, firstName, lastName);
+    const newUser = await User.findOne({ where: { email } });
+    console.log(newUser);
+    if (newUser) {
+      await Athlete.insert({
+        birthYear,
+        team,
+        user: newUser,
+        male,
+        female,
+      });
+
+      const newAthlete = await Athlete.findOne({ where: { user: newUser.id } });
+      if (newAthlete) {
+        await getConnection()
+          .createQueryBuilder()
+          .relation(Event, "athletes")
+          .of(eventId)
+          .add(newAthlete);
+        return true;
+      } else return false;
+    } else return false;
   }
 }

@@ -85,6 +85,16 @@ export class UserResolver {
     return true;
   }
 
+  async internalLogin(email: string, password: string) {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return false;
+    }
+    const valid = await compare(password, user.password);
+    if (!valid) return false;
+    return user;
+  }
+
   @Mutation(() => Boolean)
   async logout(@Ctx() context: MyContext) {
     sendRefreshToken(context.res, "");
