@@ -81,7 +81,7 @@ export class EventResolver {
         return event;
       }
     } else {
-      return "Event not found.";
+      return null;
     }
   }
 
@@ -131,7 +131,6 @@ export class EventResolver {
   }
 
   @Mutation(() => Boolean)
-  @UseMiddleware(isAuth)
   async registerForEvent(
     @Arg("eventId") eventId: string,
     @Arg("email") email: string,
@@ -158,7 +157,6 @@ export class EventResolver {
     }
     await userResolver.register(email, password, firstName, lastName);
     const newUser = await User.findOne({ where: { email } });
-    console.log(newUser);
     if (newUser) {
       await Athlete.insert({
         birthYear,
@@ -167,7 +165,6 @@ export class EventResolver {
         male,
         female,
       });
-
       const newAthlete = await Athlete.findOne({ where: { user: newUser.id } });
       if (newAthlete) {
         await getConnection()

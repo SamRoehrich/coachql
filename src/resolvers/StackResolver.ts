@@ -53,7 +53,7 @@ export class StackResolver {
     console.log("create called");
     const eventResolver = new EventResolver();
     const event = await eventResolver.event(eventId);
-    if (event === "Event not found.") {
+    if (event === null) {
       console.log("event not found");
       return false;
     } else if (event) {

@@ -79,7 +79,29 @@ import { BoulderResolver } from "./resolvers/BoulderResolver";
     return res.send(await revokeRefreshTokenForUser(user));
   });
 
-  await createConnection();
+  await createConnection({
+    type: "postgres",
+    host: process.env.REMOTE_DB_HOST,
+    database: process.env.REMOTE_DB_DATABASE,
+    port: 5432,
+    username: process.env.REMOTE_DB_USER,
+    password: process.env.REMOTE_DB_PASSWORD,
+    extra: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
+    synchronize: true,
+    logging: true,
+    entities: ["src/entity/**/*.ts"],
+    migrations: ["src/migration/**/*.ts"],
+    subscribers: ["src/subscriber/**/*.ts"],
+    cli: {
+      entitiesDir: "src/entity",
+      migrationsDir: "src/migration",
+      subscribersDir: "src/subscriber",
+    },
+  });
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({

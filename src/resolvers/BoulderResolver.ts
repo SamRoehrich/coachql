@@ -2,12 +2,27 @@ import { Arg, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
 import { Boulder } from "../entity/Boulder";
 import { isAuth } from "../utils/auth";
 import { getConnection } from "typeorm";
+import { EventResolver } from "./EventResolver";
 
 @Resolver()
 export class BoulderResolver {
   @Query(() => [Boulder])
   async getBoulders() {
     return await Boulder.find();
+  }
+
+  @Query(() => [Boulder])
+  async getBouldersForEvent(@Arg("eventId") eventId: string) {
+    const eventResolver = new EventResolver();
+    const event = await eventResolver.event(eventId);
+    const boulders: Boulder[] = [];
+    if (event) {
+      for (let i = 0; i < event.stacks.length; i++) {
+        event.stacks[i].boulders.forEach((boulder) => boulders.push(boulder));
+      }
+      return boulders;
+    }
+    return null;
   }
 
   @Query(() => Boulder)
