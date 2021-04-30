@@ -15,6 +15,7 @@ import { getConnection } from "typeorm";
 import { Stack } from "../entity/Stack";
 import { Boulder } from "../entity/Boulder";
 import { UserResolver } from "./UserResolver";
+import { MinimalStack, StackResolver } from "./StackResolver";
 
 @Resolver()
 export class EventResolver {
@@ -111,11 +112,16 @@ export class EventResolver {
     @Arg("visible") visible: boolean,
     @Arg("startDate") startDate: string,
     @Arg("numBoulders") numBoulders: number,
-    @Ctx() { payload }: MyContext
+    @Arg("stacks", () => [MinimalStack]) stacks: MinimalStack[],
+    @Ctx() ctx: MyContext
   ) {
     try {
-      const creator = await User.findOne(payload?.userId);
-      await Event.insert({
+      const stackResolver = new StackResolver();
+      const creator = await User.findOne(ctx.payload?.userId);
+      if (!creator) {
+        return false;
+      }
+      const newEvent = await Event.insert({
         name,
         location,
         visible,
@@ -123,6 +129,26 @@ export class EventResolver {
         creator,
         numBoulders,
       });
+      if (newEvent) {
+        if (stacks.length > 0) {
+          const eventId = newEvent.identifiers[0].id;
+          for (let i = 0; i < stacks.length; i++) {
+            const { female, male, a, b, c, d, jr } = stacks[i];
+            stackResolver.createStack(
+              eventId,
+              male,
+              female,
+              jr,
+              a,
+              b,
+              c,
+              d,
+              ctx
+            );
+          }
+        }
+        return true;
+      }
     } catch (err) {
       console.log(err);
       return false;

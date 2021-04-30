@@ -40,6 +40,7 @@ export class UserResolver {
   }
 
   @Query(() => User, { nullable: true })
+  @UseMiddleware(isAuth)
   me(@Ctx() context: MyContext) {
     const authorization = context.req.headers["authorization"];
 

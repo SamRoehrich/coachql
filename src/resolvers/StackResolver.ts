@@ -1,6 +1,8 @@
 import {
   Arg,
   Ctx,
+  Field,
+  InputType,
   Mutation,
   Query,
   Resolver,
@@ -12,6 +14,25 @@ import { Stack } from "../entity/Stack";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
 import { EventResolver } from "./EventResolver";
+
+@InputType()
+export class MinimalStack {
+  @Field()
+  male: boolean;
+
+  @Field()
+  female: boolean;
+  @Field()
+  a: boolean;
+  @Field()
+  b: boolean;
+  @Field()
+  c: boolean;
+  @Field()
+  d: boolean;
+  @Field()
+  jr: boolean;
+}
 
 @Resolver()
 export class StackResolver {
@@ -93,7 +114,9 @@ export class StackResolver {
           return false;
         }
       } else {
-        console.log("id's did not match");
+        console.log(
+          "You do not have access to this function. ERR: Create Stack"
+        );
         return false;
       }
     } else {

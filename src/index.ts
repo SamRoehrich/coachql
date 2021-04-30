@@ -32,6 +32,7 @@ import { BoulderResolver } from "./resolvers/BoulderResolver";
   );
   app.post("/refresh_token", async (req, res) => {
     console.log("refresh called");
+    console.log(req.cookies);
     const token = req.cookies.jid;
     if (!token) {
       return res.send({ ok: false, accessToken: "" });
