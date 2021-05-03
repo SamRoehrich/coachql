@@ -25,14 +25,15 @@ export const isAuth: Middleware<MyContext> = ({ context }, next) => {
   const authorization = context.req.headers["authorization"];
 
   if (!authorization) {
-    throw new Error("Not authenticated.");
+    context.payload = { userId: 0, success: false };
   }
 
   try {
     const token = authorization?.split(" ")[1];
     if (token === undefined) return next();
     const payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
-    context.payload = payload as any;
+    context.payload!.userId = payload as any;
+    context.payload!.success = true;
   } catch (err) {
     console.log(err);
   }
