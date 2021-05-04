@@ -17,6 +17,7 @@ import { Boulder } from "../entity/Boulder";
 import { UserResolver } from "./UserResolver";
 import { MinimalStack, StackResolver } from "./StackResolver";
 import { getAgeCatagory } from "../utils/athlete";
+import { Athletes } from "../utils/seed";
 
 @Resolver()
 export class EventResolver {
@@ -157,6 +158,37 @@ export class EventResolver {
     } catch (err) {
       console.log(err);
       return false;
+    }
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async seedEvent(@Arg("eventId") evnetId: string) {
+    let i = 0;
+    const seed = Athletes;
+    while (i < seed.length) {
+      let {
+        firstName,
+        lastName,
+        email,
+        password,
+        team,
+        birthYear,
+        male,
+        female,
+      } = seed[i];
+      await this.registerForEvent(
+        evnetId,
+        email,
+        password,
+        firstName,
+        lastName,
+        team,
+        birthYear,
+        female,
+        male
+      );
+      i++;
     }
     return true;
   }

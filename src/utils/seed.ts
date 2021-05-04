@@ -1,4 +1,15 @@
-const Athletes = [
+interface AthleteInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  male: boolean;
+  female: boolean;
+  birthYear: number;
+  team: string;
+}
+
+export const Athletes: AthleteInput[] = [
   {
     firstName: "Luke",
     lastName: "Williams",
