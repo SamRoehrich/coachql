@@ -1,5 +1,5 @@
 import { sign, verify } from "jsonwebtoken";
-import { Middleware } from "type-graphql/dist/interfaces/Middleware";
+import { MiddlewareFn } from "type-graphql/dist/interfaces/Middleware";
 import { User } from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { Response } from "express";
@@ -21,25 +21,24 @@ export const createRefreshToken = (user: User) => {
   );
 };
 
-export const isAuth: Middleware<MyContext> = ({ context }, next) => {
+export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
   const authorization = context.req.headers["authorization"];
 
   if (!authorization) {
-    context.payload = { userId: 0, success: false };
+    throw new Error("not authenticated");
   }
 
   try {
-    const token = authorization?.split(" ")[1];
-    if (token === undefined) return next();
+    const token = authorization.split(" ")[1];
     const payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
-    context.payload!.userId = payload as any;
-    context.payload!.success = true;
+    context.payload = payload as any;
   } catch (err) {
     console.log(err);
+    throw new Error("not authenticated");
   }
+
   return next();
 };
-
 export const sendRefreshToken = (res: Response, token: string) => {
   res.cookie("jid", token, {
     httpOnly: true,

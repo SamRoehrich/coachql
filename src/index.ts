@@ -30,6 +30,7 @@ import { BoulderResolver } from "./resolvers/BoulderResolver";
       origin: "http://localhost:3000",
     })
   );
+
   app.post("/refresh_token", async (req, res) => {
     console.log("refresh called");
     console.log(req.cookies);

@@ -6,7 +6,9 @@ import {
   BaseEntity,
   JoinColumn,
   OneToOne,
+  ManyToMany,
 } from "typeorm";
+import { Stack } from "./Stack";
 import { User } from "./User";
 
 @ObjectType()
@@ -36,4 +38,7 @@ export class Athlete extends BaseEntity {
   @Field()
   @Column()
   team: string;
+
+  @ManyToMany(() => Stack)
+  stacks: Stack[];
 }

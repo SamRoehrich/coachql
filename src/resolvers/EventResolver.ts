@@ -16,6 +16,7 @@ import { Stack } from "../entity/Stack";
 import { Boulder } from "../entity/Boulder";
 import { UserResolver } from "./UserResolver";
 import { MinimalStack, StackResolver } from "./StackResolver";
+import { getAgeCatagory } from "../utils/athlete";
 
 @Resolver()
 export class EventResolver {
@@ -103,6 +104,10 @@ export class EventResolver {
     }
     return false;
   }
+
+  // @Mutation(() => Boolean)
+  // @UseMiddleware(isAuth)
+  // async seedEvent(@Arg("eventId") eventId: string) {}
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
@@ -193,12 +198,51 @@ export class EventResolver {
       });
       const newAthlete = await Athlete.findOne({ where: { user: newUser.id } });
       if (newAthlete) {
+        const ageCat = getAgeCatagory(birthYear);
         await getConnection()
           .createQueryBuilder()
           .relation(Event, "athletes")
           .of(eventId)
           .add(newAthlete);
-        return true;
+        if (newAthlete.male) {
+          const stacks = await Stack.find({
+            where: { male: true, event: eventId },
+          });
+          for (let x = 0; x < stacks.length; x++) {
+            console.log(stacks[x]);
+            for (const [key, value] of Object.entries(stacks[x])) {
+              if (key === ageCat) {
+                if (value === true) {
+                  console.log(key + value + stacks[x].id);
+                  await getConnection()
+                    .createQueryBuilder()
+                    .relation(Stack, "athletes")
+                    .of(stacks[x])
+                    .add(newAthlete);
+                  return true;
+                }
+              }
+            }
+          }
+        } else {
+          const stacks = await Stack.find({ where: { female: true } });
+          for (let x = 0; x < stacks.length; x++) {
+            console.log(stacks[x]);
+            for (const [key, value] of Object.entries(stacks[x])) {
+              if (key === ageCat) {
+                if (value === true) {
+                  await getConnection()
+                    .createQueryBuilder()
+                    .relation(Stack, "athletes")
+                    .of(stacks[x])
+                    .add(newAthlete);
+                  return true;
+                }
+              }
+            }
+          }
+        }
+        return false;
       } else return false;
     } else return false;
   }

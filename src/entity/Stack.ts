@@ -5,6 +5,8 @@ import {
   Column,
   BaseEntity,
   ManyToOne,
+  JoinTable,
+  ManyToMany,
 } from "typeorm";
 import { Athlete } from "./Athlete";
 import { Boulder } from "./Boulder";
@@ -49,8 +51,9 @@ export class Stack extends BaseEntity {
   @Field(() => Event)
   event: Event;
 
-  @ManyToOne(() => Athlete, (athlete) => athlete.id)
+  @ManyToMany(() => Athlete, (athlete) => athlete.id)
   @Field(() => [Athlete])
+  @JoinTable()
   athletes: Athlete[];
 
   @ManyToOne(() => Boulder, (boulder) => boulder.id)
