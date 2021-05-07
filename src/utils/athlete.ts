@@ -1,26 +1,27 @@
 // import { Athlete } from "../entity/Athlete";
+import { Catagory } from "../entity/Stack";
 
 export const getAgeCatagory = (birthYear: number) => {
   switch (birthYear) {
     case 2010:
-      return "d";
+      return Catagory.D;
     case 2009:
-      return "c";
+      return Catagory.C;
     case 2008:
-      return "c";
+      return Catagory.C;
     case 2007:
-      return "b";
+      return Catagory.B;
     case 2006:
-      return "b";
+      return Catagory.B;
     case 2005:
-      return "a";
+      return Catagory.A;
     case 2004:
-      return "a";
+      return Catagory.A;
     case 2003:
-      return "jr";
+      return Catagory.JR;
     case 2002:
-      return "jr";
+      return Catagory.JR;
     default:
-      return "d";
+      return Catagory.D;
   }
 };

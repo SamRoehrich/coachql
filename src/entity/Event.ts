@@ -8,10 +8,13 @@ import {
   JoinTable,
   OneToMany,
   ManyToOne,
+  OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { Athlete } from "./Athlete";
 import { User } from "./User";
 import { Stack } from "./Stack";
+import { RunningOrder } from "./RunningOrder";
 
 @ObjectType()
 @Entity("events")
@@ -56,4 +59,9 @@ export class Event extends BaseEntity {
   @Field(() => [Stack], { nullable: true })
   @OneToMany(() => Stack, (stack) => stack.event)
   stacks: Stack[];
+
+  @Field(() => RunningOrder)
+  @OneToOne(() => RunningOrder, (runningOrder) => runningOrder.id)
+  @JoinColumn()
+  runningOrder: RunningOrder;
 }

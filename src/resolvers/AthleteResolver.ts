@@ -4,6 +4,7 @@ import { getConnection } from "typeorm";
 import { Athlete } from "../entity/Athlete";
 import { User } from "../entity/User";
 import { Event } from "../entity/Event";
+import { Gender } from "../entity/Stack";
 // import { getAgeCatagory } from "../utils/athlete";
 // import { isFemale } from "../utils/stack";
 
@@ -28,8 +29,7 @@ export class AthleteResolver {
     @Arg("lastName") lastName: string,
     @Arg("birthYear") birthYear: number,
     @Arg("team") team: string,
-    @Arg("male") male: boolean,
-    @Arg("female") female: boolean
+    @Arg("gender") gender: Gender
   ) {
     const hashedPassword = await hash(password, 12);
     await User.insert({
@@ -40,7 +40,7 @@ export class AthleteResolver {
     });
 
     const user = await User.findOne({ where: { email } });
-    const athlete = Athlete.insert({ user, birthYear, team, female, male });
+    const athlete = Athlete.insert({ user, birthYear, team, gender });
 
     if (athlete) {
       return true;

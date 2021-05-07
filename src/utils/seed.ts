@@ -1,10 +1,11 @@
+import { Gender } from "../entity/Stack";
+
 interface AthleteInput {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
-  male: boolean;
-  female: boolean;
+  gender: Gender;
   birthYear: number;
   team: string;
 }
@@ -15,8 +16,7 @@ export const Athletes: AthleteInput[] = [
     lastName: "Williams",
     email: "luke@luke.com",
     password: "password",
-    male: true,
-    female: false,
+    gender: Gender.Male,
     birthYear: 2000,
     team: "Rocks and Ropes",
   },
@@ -25,8 +25,7 @@ export const Athletes: AthleteInput[] = [
     lastName: "James",
     email: "Elissa@Elissa.com",
     password: "password",
-    male: false,
-    female: true,
+    gender: Gender.Female,
     birthYear: 2004,
     team: "Rocks and Ropes",
   },
@@ -35,8 +34,7 @@ export const Athletes: AthleteInput[] = [
     lastName: "Hanson",
     email: "Justin@Justin.com",
     password: "password",
-    male: true,
-    female: false,
+    gender: Gender.Male,
     birthYear: 2000,
     team: "Rocks and Ropes",
   },
@@ -45,8 +43,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Roberts",
     email: "Abby@Abby.com",
     password: "password",
-    male: false,
-    female: true,
+    gender: Gender.Female,
+
     birthYear: 2005,
     team: "Rocks and Ropes",
   },
@@ -55,8 +53,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Williams",
     email: "Jon@Jon.com",
     password: "password",
-    male: true,
-    female: false,
+    gender: Gender.Male,
+
     birthYear: 2008,
     team: "Rocks and Ropes",
   },
@@ -65,8 +63,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Hampton",
     email: "Tris@Tris.com",
     password: "password",
-    male: false,
-    female: true,
+    gender: Gender.Female,
+
     birthYear: 2009,
     team: "Rocks and Ropes",
   },
@@ -75,8 +73,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Flemmings",
     email: "Josh@Josh.com",
     password: "password",
-    male: true,
-    female: false,
+    gender: Gender.Male,
+
     birthYear: 2007,
     team: "Rocks and Ropes",
   },
@@ -85,8 +83,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Smith",
     email: "Elsa@Elsa.com",
     password: "password",
-    male: false,
-    female: true,
+    gender: Gender.Female,
+
     birthYear: 2000,
     team: "Rocks and Ropes",
   },
@@ -95,8 +93,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Abbey",
     email: "Brandon@Brandon.com",
     password: "password",
-    male: true,
-    female: false,
+    gender: Gender.Male,
+
     birthYear: 2010,
     team: "Rocks and Ropes",
   },
@@ -105,8 +103,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Williams",
     email: "Dee@Dee.com",
     password: "password",
-    male: false,
-    female: true,
+    gender: Gender.Female,
+
     birthYear: 2000,
     team: "Rocks and Ropes",
   },
@@ -115,8 +113,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Johnson",
     email: "Jack@Jack.com",
     password: "password",
-    male: true,
-    female: false,
+    gender: Gender.Male,
+
     birthYear: 2008,
     team: "Rocks and Ropes",
   },
@@ -125,8 +123,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Lee",
     email: "lucy@lucy.com",
     password: "password",
-    male: false,
-    female: true,
+    gender: Gender.Female,
+
     birthYear: 2006,
     team: "Rocks and Ropes",
   },
@@ -135,8 +133,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Smith",
     email: "sam@sammm.com",
     password: "password",
-    male: true,
-    female: false,
+    gender: Gender.Male,
+
     birthYear: 2005,
     team: "Rocks and Ropes",
   },
@@ -145,8 +143,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Jennings",
     email: "jess@jess.com",
     password: "password",
-    male: false,
-    female: true,
+    gender: Gender.Female,
+
     birthYear: 2000,
     team: "Rocks and Ropes",
   },
@@ -155,8 +153,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Williams",
     email: "rob@rob.com",
     password: "password",
-    male: true,
-    female: false,
+    gender: Gender.Male,
+
     birthYear: 2000,
     team: "Rocks and Ropes",
   },
@@ -165,8 +163,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Flanders",
     email: "jenn@jenn.com",
     password: "password",
-    male: false,
-    female: true,
+    gender: Gender.Female,
+
     birthYear: 2008,
     team: "Rocks and Ropes",
   },
@@ -175,8 +173,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Stevens",
     email: "clint@clint.com",
     password: "password",
-    male: true,
-    female: false,
+    gender: Gender.Male,
+
     birthYear: 2008,
     team: "Rocks and Ropes",
   },
@@ -185,8 +183,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Doe",
     email: "jane@jane.com",
     password: "password",
-    male: false,
-    female: true,
+    gender: Gender.Female,
+
     birthYear: 2006,
     team: "Rocks and Ropes",
   },
@@ -195,8 +193,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Jacobs",
     email: "billy@billy.com",
     password: "password",
-    male: true,
-    female: false,
+    gender: Gender.Male,
+
     birthYear: 2004,
     team: "Rocks and Ropes",
   },
@@ -205,8 +203,8 @@ export const Athletes: AthleteInput[] = [
     lastName: "Johnson",
     email: "sadie@sadie.com",
     password: "password",
-    male: false,
-    female: true,
+    gender: Gender.Female,
+
     birthYear: 2005,
     team: "Rocks and Ropes",
   },

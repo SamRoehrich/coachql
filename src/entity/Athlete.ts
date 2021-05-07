@@ -8,7 +8,7 @@ import {
   OneToOne,
   ManyToMany,
 } from "typeorm";
-import { Stack } from "./Stack";
+import { Gender, Stack } from "./Stack";
 import { User } from "./User";
 
 @ObjectType()
@@ -18,13 +18,9 @@ export class Athlete extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field(() => Boolean)
-  @Column({ default: false })
-  male: boolean;
-
-  @Field(() => Boolean)
-  @Column({ default: false })
-  female: boolean;
+  @Field(() => Gender)
+  @Column({ nullable: true })
+  gender: Gender;
 
   @Field(() => User)
   @OneToOne(() => User)

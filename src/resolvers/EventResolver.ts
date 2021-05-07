@@ -12,12 +12,11 @@ import { User } from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
 import { getConnection } from "typeorm";
-import { Stack } from "../entity/Stack";
+import { Gender, InitialStacks, Stack } from "../entity/Stack";
 import { Boulder } from "../entity/Boulder";
 import { UserResolver } from "./UserResolver";
-import { MinimalStack, StackResolver } from "./StackResolver";
-import { getAgeCatagory } from "../utils/athlete";
 import { Athletes } from "../utils/seed";
+import { StackResolver } from "./StackResolver";
 
 @Resolver()
 export class EventResolver {
@@ -106,10 +105,6 @@ export class EventResolver {
     return false;
   }
 
-  // @Mutation(() => Boolean)
-  // @UseMiddleware(isAuth)
-  // async seedEvent(@Arg("eventId") eventId: string) {}
-
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async createEvent(
@@ -118,7 +113,6 @@ export class EventResolver {
     @Arg("visible") visible: boolean,
     @Arg("startDate") startDate: string,
     @Arg("numBoulders") numBoulders: number,
-    @Arg("stacks", () => [MinimalStack]) stacks: MinimalStack[],
     @Ctx() ctx: MyContext
   ) {
     try {
@@ -136,22 +130,11 @@ export class EventResolver {
         numBoulders,
       });
       if (newEvent) {
-        if (stacks.length > 0) {
-          const eventId = newEvent.identifiers[0].id;
-          for (let i = 0; i < stacks.length; i++) {
-            const { female, male, a, b, c, d, jr } = stacks[i];
-            stackResolver.createStack(
-              eventId,
-              male,
-              female,
-              jr,
-              a,
-              b,
-              c,
-              d,
-              ctx
-            );
-          }
+        const stacks = InitialStacks;
+        const eventId = newEvent.identifiers[0].id;
+        for (let i = 0; i < stacks.length; i++) {
+          const { gender, catagory } = stacks[i];
+          stackResolver.createStack(eventId, gender, catagory, ctx);
         }
         return true;
       }
@@ -174,8 +157,7 @@ export class EventResolver {
         password,
         team,
         birthYear,
-        male,
-        female,
+        gender,
       } = seed[i];
       await this.registerForEvent(
         evnetId,
@@ -185,8 +167,7 @@ export class EventResolver {
         lastName,
         team,
         birthYear,
-        female,
-        male
+        gender
       );
       i++;
     }
@@ -202,8 +183,7 @@ export class EventResolver {
     @Arg("lastName") lastName: string,
     @Arg("team") team: string,
     @Arg("birthYear") birthYear: number,
-    @Arg("female") female: boolean,
-    @Arg("male") male: boolean
+    @Arg("gender") gender: Gender
   ) {
     const userResolver = new UserResolver();
     const user = await userResolver.internalLogin(email, password);
@@ -225,56 +205,56 @@ export class EventResolver {
         birthYear,
         team,
         user: newUser,
-        male,
-        female,
+        gender,
       });
       const newAthlete = await Athlete.findOne({ where: { user: newUser.id } });
       if (newAthlete) {
-        const ageCat = getAgeCatagory(birthYear);
+        // const ageCat = getAgeCatagory(birthYear);
         await getConnection()
           .createQueryBuilder()
           .relation(Event, "athletes")
           .of(eventId)
           .add(newAthlete);
-        if (newAthlete.male) {
-          const stacks = await Stack.find({
-            where: { male: true, event: eventId },
-          });
-          for (let x = 0; x < stacks.length; x++) {
-            console.log(stacks[x]);
-            for (const [key, value] of Object.entries(stacks[x])) {
-              if (key === ageCat) {
-                if (value === true) {
-                  console.log(key + value + stacks[x].id);
-                  await getConnection()
-                    .createQueryBuilder()
-                    .relation(Stack, "athletes")
-                    .of(stacks[x])
-                    .add(newAthlete);
-                  return true;
-                }
-              }
-            }
-          }
-        } else {
-          const stacks = await Stack.find({ where: { female: true } });
-          for (let x = 0; x < stacks.length; x++) {
-            console.log(stacks[x]);
-            for (const [key, value] of Object.entries(stacks[x])) {
-              if (key === ageCat) {
-                if (value === true) {
-                  await getConnection()
-                    .createQueryBuilder()
-                    .relation(Stack, "athletes")
-                    .of(stacks[x])
-                    .add(newAthlete);
-                  return true;
-                }
-              }
-            }
-          }
-        }
-        return false;
+        return true;
+        //   if (newAthlete.male) {
+        //     const stacks = await Stack.find({
+        //       where: { male: true, event: eventId },
+        //     });
+        //     for (let x = 0; x < stacks.length; x++) {
+        //       console.log(stacks[x]);
+        //       for (const [key, value] of Object.entries(stacks[x])) {
+        //         if (key === ageCat) {
+        //           if (value === true) {
+        //             console.log(key + value + stacks[x].id);
+        //             await getConnection()
+        //               .createQueryBuilder()
+        //               .relation(Stack, "athletes")
+        //               .of(stacks[x])
+        //               .add(newAthlete);
+        //             return true;
+        //           }
+        //         }
+        //       }
+        //     }
+        //   } else {
+        //     const stacks = await Stack.find({ where: { female: true } });
+        //     for (let x = 0; x < stacks.length; x++) {
+        //       console.log(stacks[x]);
+        //       for (const [key, value] of Object.entries(stacks[x])) {
+        //         if (key === ageCat) {
+        //           if (value === true) {
+        //             await getConnection()
+        //               .createQueryBuilder()
+        //               .relation(Stack, "athletes")
+        //               .of(stacks[x])
+        //               .add(newAthlete);
+        //             return true;
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
+        //   return false;
       } else return false;
     } else return false;
   }

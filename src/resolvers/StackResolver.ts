@@ -10,28 +10,18 @@ import {
 } from "type-graphql";
 import { getConnection } from "typeorm";
 import { Boulder } from "../entity/Boulder";
-import { Stack } from "../entity/Stack";
+import { Stack, Gender, Catagory } from "../entity/Stack";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
 import { EventResolver } from "./EventResolver";
 
 @InputType()
 export class MinimalStack {
-  @Field()
-  male: boolean;
+  @Field(() => Gender)
+  gender: Gender;
 
-  @Field()
-  female: boolean;
-  @Field()
-  a: boolean;
-  @Field()
-  b: boolean;
-  @Field()
-  c: boolean;
-  @Field()
-  d: boolean;
-  @Field()
-  jr: boolean;
+  @Field(() => Catagory)
+  catagory: Catagory;
 }
 
 @Resolver()
@@ -62,16 +52,10 @@ export class StackResolver {
   @UseMiddleware(isAuth)
   async createStack(
     @Arg("eventId") eventId: string,
-    @Arg("male") male: boolean,
-    @Arg("female") female: boolean,
-    @Arg("jr") jr: boolean,
-    @Arg("a") a: boolean,
-    @Arg("b") b: boolean,
-    @Arg("c") c: boolean,
-    @Arg("d") d: boolean,
+    @Arg("gender", () => Gender) gender: Gender,
+    @Arg("catagory", () => Catagory) catagory: Catagory,
     @Ctx() { payload }: MyContext
   ) {
-    console.log("create called");
     const eventResolver = new EventResolver();
     const event = await eventResolver.event(eventId);
     if (event === null) {
@@ -81,13 +65,8 @@ export class StackResolver {
       if (event!.creator.id === payload!.userId) {
         const stack = await Stack.insert({
           event,
-          a,
-          b,
-          c,
-          d,
-          jr,
-          male,
-          female,
+          gender,
+          catagory,
         });
         if (stack) {
           let i = 1;
