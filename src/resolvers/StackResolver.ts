@@ -87,6 +87,7 @@ export class StackResolver {
           } else {
             console.log("Could not create all the boulders");
             return false;
+            5;
           }
         } else {
           console.log("Failed to create stack");

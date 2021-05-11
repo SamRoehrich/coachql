@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from "type-graphql";
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { Group } from "./Group";
+import { Stack } from "./Stack";
 
 @ObjectType()
 @Entity("runningOrder")
@@ -9,7 +9,19 @@ export class RunningOrder extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field(() => Group)
+  @Field(() => [Stack])
   @Column({ array: false, type: "jsonb", default: () => "'[]'" })
-  groups: Group[];
+  unordered: Stack[];
+
+  @Field(() => [Stack])
+  @Column({ array: false, type: "jsonb", default: () => "'[]'" })
+  first: Stack[];
+
+  @Field(() => [Stack])
+  @Column({ array: false, type: "jsonb", default: () => "'[]'" })
+  second: Stack[];
+
+  @Field(() => [Stack])
+  @Column({ array: false, type: "jsonb", default: () => "'[]'" })
+  third: Stack[];
 }

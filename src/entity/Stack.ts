@@ -25,11 +25,11 @@ export enum Catagory {
   D = "d",
 }
 
-export type GroupType = {
+export interface GroupType {
   id: number;
   gender: Gender;
   catagory: Catagory;
-};
+}
 
 export const InitialStacks: GroupType[] = [
   {

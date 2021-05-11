@@ -12,12 +12,11 @@ import { User } from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
 import { getConnection } from "typeorm";
-import { Gender, InitialStacks, Stack } from "../entity/Stack";
+import { Gender } from "../entity/Stack";
 import { Boulder } from "../entity/Boulder";
 import { UserResolver } from "./UserResolver";
 import { Athletes } from "../utils/seed";
-import { StackResolver } from "./StackResolver";
-
+import { RunningOrderResolver } from "./RunningOrderResolver";
 @Resolver()
 export class EventResolver {
   @Query(() => [Event])
@@ -53,7 +52,20 @@ export class EventResolver {
         .of(event)
         .loadOne();
       event.creator = creator;
-      event.stacks = await Stack.find({ where: { event } });
+      const ro = await getConnection()
+        .createQueryBuilder()
+        .relation(Event, "runningOrder")
+        .of(event)
+        .loadOne();
+      if (ro) {
+        event.runningOrder = ro;
+      }
+
+      event.stacks = await getConnection()
+        .createQueryBuilder()
+        .relation(Event, "stacks")
+        .of(event)
+        .loadMany();
       let i = 0;
       while (i < event.stacks.length) {
         event.stacks[i].boulders = await Boulder.find({
@@ -116,7 +128,7 @@ export class EventResolver {
     @Ctx() ctx: MyContext
   ) {
     try {
-      const stackResolver = new StackResolver();
+      const roResolver = new RunningOrderResolver();
       const creator = await User.findOne(ctx.payload?.userId);
       if (!creator) {
         return false;
@@ -130,13 +142,13 @@ export class EventResolver {
         numBoulders,
       });
       if (newEvent) {
-        const stacks = InitialStacks;
         const eventId = newEvent.identifiers[0].id;
-        for (let i = 0; i < stacks.length; i++) {
-          const { gender, catagory } = stacks[i];
-          stackResolver.createStack(eventId, gender, catagory, ctx);
+        const res = await roResolver.createRunningOrder(eventId);
+        if (res) {
+          return true;
+        } else {
+          return false;
         }
-        return true;
       }
     } catch (err) {
       console.log(err);

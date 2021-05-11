@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Event } from "./Event";
-import { GroupType } from "./Stack";
+import { Stack } from "./Stack";
 
 @ObjectType()
 @Entity("groups")
@@ -26,6 +26,7 @@ export class Group extends BaseEntity {
   @Column()
   title: string;
 
-  @Field(() => Group)
-  stacks: GroupType[];
+  @Field(() => [Stack])
+  @Column({ array: false, type: "jsonb", default: () => "'[]'" })
+  stacks: Stack[];
 }

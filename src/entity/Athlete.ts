@@ -19,7 +19,7 @@ export class Athlete extends BaseEntity {
   id: number;
 
   @Field(() => Gender)
-  @Column({ nullable: true })
+  @Column()
   gender: Gender;
 
   @Field(() => User)
