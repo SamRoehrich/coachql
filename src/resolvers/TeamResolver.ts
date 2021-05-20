@@ -1,9 +1,11 @@
 import {
   Arg,
   Ctx,
+  FieldResolver,
   Mutation,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from "type-graphql";
 import { User } from "../entity/User";
@@ -11,14 +13,24 @@ import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
 import { verify } from "jsonwebtoken";
 import { Team } from "../entity/Team";
+import { getConnection } from "typeorm";
 
-@Resolver()
+@Resolver(() => Team)
 export class TeamResolver {
   @Query(() => [Team])
   teams() {
     return Team.find();
   }
 
+  @FieldResolver()
+  async headCoach(@Root() team: Team) {
+    const headCoach = await getConnection()
+      .createQueryBuilder()
+      .relation(Team, "headCoach")
+      .of(team)
+      .loadOne();
+    return headCoach;
+  }
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async registerTeam(

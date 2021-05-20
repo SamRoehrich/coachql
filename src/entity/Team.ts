@@ -8,9 +8,11 @@ import {
   OneToOne,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from "typeorm";
 import { Athlete } from "./Athlete";
 import { User } from "./User";
+import { Workout } from "./Workout";
 
 @ObjectType()
 @Entity("teams")
@@ -32,4 +34,8 @@ export class Team extends BaseEntity {
   @ManyToMany(() => Athlete)
   @JoinTable()
   athletes: Athlete[];
+
+  @Field(() => [Workout])
+  @OneToMany(() => Workout, (workout) => workout.id)
+  workouts: Workout[];
 }

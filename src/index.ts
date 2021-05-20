@@ -82,18 +82,37 @@ import { RunningOrderResolver } from "./resolvers/RunningOrderResolver";
     return res.send(await revokeRefreshTokenForUser(user));
   });
 
+  // await createConnection({
+  //   type: "postgres",
+  //   host: process.env.REMOTE_DB_HOST,
+  //   database: process.env.REMOTE_DB_DATABASE,
+  //   port: 5432,
+  //   username: process.env.REMOTE_DB_USER,
+  //   password: process.env.REMOTE_DB_PASSWORD,
+  //   extra: {
+  //     ssl: {
+  //       rejectUnauthorized: false,
+  //     },
+  //   },
+  //   synchronize: true,
+  //   logging: true,
+  //   entities: ["src/entity/**/*.ts"],
+  //   migrations: ["src/migration/**/*.ts"],
+  //   subscribers: ["src/subscriber/**/*.ts"],
+  //   cli: {
+  //     entitiesDir: "src/entity",
+  //     migrationsDir: "src/migration",
+  //     subscribersDir: "src/subscriber",
+  //   },
+  // });
+
   await createConnection({
     type: "postgres",
-    host: process.env.REMOTE_DB_HOST,
-    database: process.env.REMOTE_DB_DATABASE,
+    host: "localhost",
     port: 5432,
-    username: process.env.REMOTE_DB_USER,
-    password: process.env.REMOTE_DB_PASSWORD,
-    extra: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    },
+    username: "postgres",
+    password: "root",
+    database: "cql",
     synchronize: true,
     logging: true,
     entities: ["src/entity/**/*.ts"],

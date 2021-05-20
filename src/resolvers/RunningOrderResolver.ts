@@ -1,4 +1,4 @@
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Int, Mutation, Query, Resolver } from "type-graphql";
 import { getConnection } from "typeorm";
 import { Event } from "../entity/Event";
 // import { Group } from "../entity/Group";
@@ -32,6 +32,44 @@ export class RunningOrderResolver {
       .of(eventId)
       .set(ro.identifiers[0].id);
     return true;
+  }
+
+  @Mutation(() => Boolean)
+  async editRunningOrder(
+    @Arg("runningOrderId") runningOrderId: string,
+    @Arg("unordered", () => [Int]) unordered: Number[],
+    @Arg("first", () => [Int]) first: Number[],
+    @Arg("second", () => [Int]) second: Number[],
+    @Arg("third", () => [Int]) third: Number[]
+  ) {
+    console.log(first, second, third, unordered, runningOrderId);
+    return true;
+  }
+  @Mutation(() => Boolean)
+  async resetRunningOrder(
+    @Arg("eventId") eventId: string,
+    @Arg("roId") roId: string
+  ) {
+    const qb = getConnection().createQueryBuilder();
+    const stacks = await Stack.find({
+      where: {
+        event: eventId,
+      },
+    });
+    const ro = await RunningOrder.findOne({ where: { id: roId } });
+    if (stacks && ro) {
+      qb.update(RunningOrder)
+        .set({
+          unordered: stacks,
+          first: [],
+          second: [],
+          third: [],
+        })
+        .where("id = :id", { id: roId })
+        .execute();
+      return true;
+    }
+    return false;
   }
 
   @Query(() => RunningOrder)

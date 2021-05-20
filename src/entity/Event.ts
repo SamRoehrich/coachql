@@ -60,7 +60,7 @@ export class Event extends BaseEntity {
   @OneToMany(() => Stack, (stack) => stack.event)
   stacks: Stack[];
 
-  @Field(() => RunningOrder)
+  @Field(() => RunningOrder, { nullable: true })
   @OneToOne(() => RunningOrder, (runningOrder) => runningOrder.id)
   @JoinColumn()
   runningOrder: RunningOrder;

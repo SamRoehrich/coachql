@@ -11,8 +11,8 @@ import { Event } from "../entity/Event";
 import { User } from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
-import { getConnection } from "typeorm";
-import { Gender } from "../entity/Stack";
+import { getConnection, getManager } from "typeorm";
+import { Gender, Stack } from "../entity/Stack";
 import { Boulder } from "../entity/Boulder";
 import { UserResolver } from "./UserResolver";
 import { Athletes } from "../utils/seed";
@@ -58,6 +58,38 @@ export class EventResolver {
         .of(event)
         .loadOne();
       if (ro) {
+        if (ro.unordered.length > 0) {
+          for (let i = 0; i < ro.unordered.length; i++) {
+            ro.unordered[i] = await getManager()
+              .createQueryBuilder(Stack, "stacks")
+              .where("stacks.id = :stackId", { stackId: ro.unordered[i].id })
+              .getOne();
+          }
+        }
+        if (ro.first.length > 0) {
+          for (let i = 0; i < ro.first.length; i++) {
+            ro.first[i] = await getManager()
+              .createQueryBuilder(Stack, "stacks")
+              .where("stacks.id = :stackId", { stackId: ro.unordered[i].id })
+              .getOne();
+          }
+        }
+        if (ro.second.length > 0) {
+          for (let i = 0; i < ro.second.length; i++) {
+            ro.second[i] = await getManager()
+              .createQueryBuilder(Stack, "stacks")
+              .where("stacks.id = :stackId", { stackId: ro.unordered[i].id })
+              .getOne();
+          }
+        }
+        if (ro.third.length > 0) {
+          for (let i = 0; i < ro.third.length; i++) {
+            ro.third[i] = await getManager()
+              .createQueryBuilder(Stack, "stacks")
+              .where("stacks.id = :stackId", { stackId: ro.unordered[i].id })
+              .getOne();
+          }
+        }
         event.runningOrder = ro;
       }
 
@@ -133,14 +165,19 @@ export class EventResolver {
       if (!creator) {
         return false;
       }
-      const newEvent = await Event.insert({
-        name,
-        location,
-        visible,
-        startDate,
-        creator,
-        numBoulders,
-      });
+      // const newEvent = await Event.insert({
+      //   name,
+      //   location,
+      //   visible,
+      //   startDate,
+      //   creator,
+      //   numBoulders,
+      // });
+      const newEvent = await getConnection().createQueryBuilder().insert().into(Event).values([
+        { 
+          name, location, visible, startDate, numBoulders, creator
+        }
+      ]).execute()
       if (newEvent) {
         const eventId = newEvent.identifiers[0].id;
         const res = await roResolver.createRunningOrder(eventId);
