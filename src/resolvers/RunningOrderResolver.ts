@@ -1,5 +1,5 @@
 import { Arg, Int, Mutation, Query, Resolver } from "type-graphql";
-import { getConnection } from "typeorm";
+import { getConnection, getManager } from "typeorm";
 import { Event } from "../entity/Event";
 // import { Group } from "../entity/Group";
 import { RunningOrder } from "../entity/RunningOrder";
@@ -36,13 +36,24 @@ export class RunningOrderResolver {
 
   @Mutation(() => Boolean)
   async editRunningOrder(
-    @Arg("runningOrderId") runningOrderId: string,
     @Arg("unordered", () => [Int]) unordered: Number[],
     @Arg("first", () => [Int]) first: Number[],
     @Arg("second", () => [Int]) second: Number[],
-    @Arg("third", () => [Int]) third: Number[]
+    @Arg("third", () => [Int]) third: Number[],
+    @Arg("runningOrderId") runningOrderId: string
   ) {
-    console.log(first, second, third, unordered, runningOrderId);
+    const updateRes = await getConnection()
+      .createQueryBuilder()
+      .update(RunningOrder)
+      .set({
+        unordered,
+        first,
+        second,
+        third,
+      })
+      .where("id = :id", { id: runningOrderId })
+      .execute();
+    console.log(updateRes);
     return true;
   }
   @Mutation(() => Boolean)
@@ -60,7 +71,7 @@ export class RunningOrderResolver {
     if (stacks && ro) {
       qb.update(RunningOrder)
         .set({
-          unordered: stacks,
+          unordered: stacks as any[],
           first: [],
           second: [],
           third: [],
@@ -77,14 +88,57 @@ export class RunningOrderResolver {
     const qb = getConnection().createQueryBuilder();
     let ro = await qb.relation(Event, "runningOrder").of(eventId).loadOne();
     if (ro) {
-      for (let i = 0; i < ro.unordered.length; i++) {
-        const stack = await getConnection()
-          .createQueryBuilder()
-          .where("stack.id = :stackId", { stackId: ro.unordered[i].id })
-          .getOne();
-        ro.unordered[i] = stack;
+      const unorderedStack: Stack[] = [];
+      const firstStack: Stack[] = [];
+      const secondStack: Stack[] = [];
+      const thirdStack: Stack[] = [];
+
+      console.log(ro);
+      if (ro.unordered.length > 0) {
+        for (let i = 0; i < ro.unordered.length; i++) {
+          let stack = await getManager()
+            .createQueryBuilder(Stack, "stacks")
+            .where("stacks.id = :stackId", { stackId: ro.unordered[i] })
+            .getOne();
+          if (stack) unorderedStack[i] = stack;
+        }
       }
-      return ro;
+      if (ro.first.length > 0) {
+        for (let i = 0; i < ro.first.length; i++) {
+          let stack = await getManager()
+            .createQueryBuilder(Stack, "stacks")
+            .where("stacks.id = :stackId", { stackId: ro.first[i] })
+            .getOne();
+          if (stack) firstStack[i] = stack;
+        }
+      }
+      if (ro.second.length > 0) {
+        for (let i = 0; i < ro.second.length; i++) {
+          let stack = await getManager()
+            .createQueryBuilder(Stack, "stacks")
+            .where("stacks.id = :stackId", { stackId: ro.second[i] })
+            .getOne();
+          if (stack) secondStack[i] = stack;
+        }
+      }
+      if (ro.third.length > 0) {
+        for (let i = 0; i < ro.third.length; i++) {
+          let stack = await getManager()
+            .createQueryBuilder(Stack, "stacks")
+            .where("stacks.id = :stackId", { stackId: ro.third[i] })
+            .getOne();
+          if (stack) thirdStack[i] = stack;
+        }
+      }
+
+      const res = {
+        ...ro,
+        unordered: unorderedStack,
+        first: firstStack,
+        second: secondStack,
+        third: thirdStack,
+      };
+      return res;
     }
     return null;
   }

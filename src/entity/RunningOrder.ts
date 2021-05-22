@@ -11,17 +11,17 @@ export class RunningOrder extends BaseEntity {
 
   @Field(() => [Stack])
   @Column({ array: false, type: "jsonb", default: () => "'[]'" })
-  unordered: Stack[];
+  unordered: Number[];
 
   @Field(() => [Stack])
   @Column({ array: false, type: "jsonb", default: () => "'[]'" })
-  first: Stack[];
+  first: Number[];
 
   @Field(() => [Stack])
   @Column({ array: false, type: "jsonb", default: () => "'[]'" })
-  second: Stack[];
+  second: Number[];
 
   @Field(() => [Stack])
   @Column({ array: false, type: "jsonb", default: () => "'[]'" })
-  third: Stack[];
+  third: Number[];
 }
