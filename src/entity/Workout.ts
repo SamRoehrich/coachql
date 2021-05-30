@@ -23,27 +23,25 @@ export class Workout extends BaseEntity {
   @Column()
   sets: number;
 
-  @Field(() => Int)
-  @Column()
-  reps: number;
-
-  // in seconds
-  @Field(() => Int)
-  @Column()
-  activeTime: number;
-
-  // in seconds
-  @Field(() => Int)
-  @Column()
-  restTime: number;
-
   @Field(() => String)
   @Column()
   description: string;
 
   @Field(() => String)
   @Column()
-  type: string;
+  workoutType: string;
+
+  @Field(() => String)
+  @Column()
+  timerType: string;
+
+  @Field(() => String)
+  @Column()
+  intervals: string;
+
+  @Field(() => String)
+  @Column()
+  equiptment: string;
 
   @Field(() => Team)
   @ManyToOne(() => Team, (team) => team.id)

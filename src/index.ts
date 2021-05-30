@@ -21,6 +21,7 @@ import { AthleteResolver } from "./resolvers/AthleteResolver";
 import { StackResolver } from "./resolvers/StackResolver";
 import { BoulderResolver } from "./resolvers/BoulderResolver";
 import { RunningOrderResolver } from "./resolvers/RunningOrderResolver";
+import { WorkoutResolver } from "./resolvers/WorkoutsResolver";
 
 (async () => {
   const app = express();
@@ -136,6 +137,7 @@ import { RunningOrderResolver } from "./resolvers/RunningOrderResolver";
         StackResolver,
         BoulderResolver,
         RunningOrderResolver,
+        WorkoutResolver,
       ],
     }),
     context: ({ req, res }) => ({ req, res }),
