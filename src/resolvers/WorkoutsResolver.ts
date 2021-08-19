@@ -1,12 +1,14 @@
 import {
   Arg,
   Ctx,
+  FieldResolver,
   Mutation,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from "type-graphql";
-import { getConnection } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
 import { Team } from "../entity/Team";
 import { Workout } from "../entity/Workout";
 import { MyContext } from "../types/MyContext";
@@ -19,7 +21,7 @@ export interface Interval {
   type: string;
   infinite: boolean;
 }
-@Resolver()
+@Resolver(() => Workout)
 export class WorkoutResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
@@ -85,6 +87,16 @@ export class WorkoutResolver {
     return false;
   }
 
+  @FieldResolver()
+  async team(@Root() workout: Workout) {
+    const team = await getConnection()
+      .createQueryBuilder()
+      .relation(Workout, "team")
+      .of(workout)
+      .loadOne();
+    return team;
+  }
+
   @Query(() => [Workout])
   async getWorkouts() {
     const workouts = await Workout.find();
@@ -101,6 +113,18 @@ export class WorkoutResolver {
     });
     if (workout) return workout;
     return false;
+  }
+  @Query(() => [Workout])
+  async getWorkoutsForTeam(@Arg("teamId") teamId: string) {
+    const workouts = await getRepository(Workout).find({
+      where: {
+        team: teamId,
+      },
+    });
+    if (workouts) {
+      return workouts;
+    }
+    return null;
   }
 }
 

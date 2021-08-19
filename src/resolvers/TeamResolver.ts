@@ -13,13 +13,25 @@ import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
 import { verify } from "jsonwebtoken";
 import { Team } from "../entity/Team";
-import { getConnection } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
+import { Workout } from "../entity/Workout";
 
 @Resolver(() => Team)
 export class TeamResolver {
   @Query(() => [Team])
-  teams() {
-    return Team.find();
+  async teams() {
+    return await Team.find();
+  }
+
+  @Query(() => Team)
+  async getTeamByCoachId(@Arg("coachId") coachId: string) {
+    const team = await getRepository(Team).findOne({
+      where: { headCoach: coachId },
+    });
+    if (team) {
+      return team;
+    }
+    return null;
   }
 
   @FieldResolver()
@@ -31,6 +43,15 @@ export class TeamResolver {
       .loadOne();
     return headCoach;
   }
+
+  @FieldResolver()
+  async workouts(@Root() team: Team) {
+    const workouts = await getRepository(Workout).find({
+      where: { team: team.id },
+    });
+    return workouts;
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async registerTeam(
