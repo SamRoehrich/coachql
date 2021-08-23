@@ -6,10 +6,13 @@ import {
   BaseEntity,
   JoinColumn,
   OneToOne,
-  ManyToMany,
+  ManyToOne,
 } from "typeorm";
-import { Gender, Stack } from "./Stack";
+import { Gender } from "./Stack";
 import { User } from "./User";
+import { Organization } from "./Organization";
+import { Team } from "./Team";
+import { TrainingPlan } from "./TrainingPlan";
 
 @ObjectType()
 @Entity("athletes")
@@ -32,9 +35,16 @@ export class Athlete extends BaseEntity {
   birthYear: number;
 
   @Field()
-  @Column()
-  team: string;
+  @ManyToOne(() => Organization)
+  organization: Organization
 
-  @ManyToMany(() => Stack)
-  stacks: Stack[];
+  @Field()
+  @ManyToOne(() => Team, { nullable: true})
+  team: Team
+
+  // group
+
+  @Field()
+  @ManyToOne(() => TrainingPlan)
+  trainingPlan: TrainingPlan
 }

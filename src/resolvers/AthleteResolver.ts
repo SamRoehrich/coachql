@@ -28,7 +28,7 @@ export class AthleteResolver {
     @Arg("firstName") firstName: string,
     @Arg("lastName") lastName: string,
     @Arg("birthYear") birthYear: number,
-    @Arg("team") team: string,
+    // @Arg("team") team: string,
     @Arg("gender") gender: Gender
   ) {
     const hashedPassword = await hash(password, 12);
@@ -40,7 +40,7 @@ export class AthleteResolver {
     });
 
     const user = await User.findOne({ where: { email } });
-    const athlete = Athlete.insert({ user, birthYear, team, gender });
+    const athlete = Athlete.insert({ user, birthYear, gender });
 
     if (athlete) {
       return true;

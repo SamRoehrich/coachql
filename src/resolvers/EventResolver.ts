@@ -175,7 +175,7 @@ export class EventResolver {
     let i = 0;
     const seed = Athletes;
     while (i < seed.length) {
-      let { firstName, lastName, email, password, team, birthYear, gender } =
+      let { firstName, lastName, email, password, birthYear, gender } =
         seed[i];
       await this.registerForEvent(
         evnetId,
@@ -183,7 +183,6 @@ export class EventResolver {
         password,
         firstName,
         lastName,
-        team,
         birthYear,
         gender
       );
@@ -199,7 +198,7 @@ export class EventResolver {
     @Arg("password") password: string,
     @Arg("firstName") firstName: string,
     @Arg("lastName") lastName: string,
-    @Arg("team") team: string,
+    // @Arg("team") team: string,
     @Arg("birthYear") birthYear: number,
     @Arg("gender") gender: Gender
   ) {
@@ -221,7 +220,7 @@ export class EventResolver {
     if (newUser) {
       await Athlete.insert({
         birthYear,
-        team,
+        // team,
         user: newUser,
         gender,
       });
