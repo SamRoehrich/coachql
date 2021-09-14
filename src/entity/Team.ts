@@ -4,15 +4,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  JoinColumn,
-  OneToOne,
   ManyToMany,
   JoinTable,
-  OneToMany,
+  ManyToOne,
 } from "typeorm";
 import { Athlete } from "./Athlete";
-import { User } from "./User";
-import { Workout } from "./Workout";
+import { Organization } from "./Organization";
 
 @ObjectType()
 @Entity("teams")
@@ -21,10 +18,10 @@ export class Team extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field(() => User)
-  @OneToOne(() => User)
-  @JoinColumn()
-  headCoach: User;
+  // @Field(() => User)
+  // @OneToOne(() => User)
+  // @JoinColumn()
+  // headCoach: User;
 
   @Field()
   @Column()
@@ -35,7 +32,8 @@ export class Team extends BaseEntity {
   @JoinTable()
   athletes: Athlete[];
 
-  @Field(() => [Workout])
-  @OneToMany(() => Workout, (workout) => workout.id)
-  workouts: Workout[];
+  @Field(() => Organization)
+  @ManyToOne(() => Organization)
+  @JoinTable()
+  organization: Organization;
 }

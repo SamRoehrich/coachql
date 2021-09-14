@@ -6,8 +6,10 @@ import {
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
+  OneToMany,
 } from "typeorm";
 import { User } from "./User";
+import { Workout } from "./Workout";
 
 @ObjectType()
 @Entity("organizations")
@@ -24,4 +26,8 @@ export class Organization extends BaseEntity {
   @OneToOne(() => User)
   @JoinColumn()
   owner: User;
+
+  @Field(() => [Workout])
+  @OneToMany(() => Workout, (workout) => workout.id)
+  workouts: Workout[];
 }

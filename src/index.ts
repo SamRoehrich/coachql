@@ -108,13 +108,34 @@ import { OrganizationResolver } from "./resolvers/OrganizationResolver";
   //   },
   // });
 
+  // await createConnection({
+  //   type: "postgres",
+  //   host: "localhost",
+  //   port: 5432,
+  //   username: "postgres",
+  //   password: "root",
+  //   database: "cql",
+  //   synchronize: true,
+  //   logging: true,
+  //   entities: ["src/entity/**/*.ts"],
+  //   migrations: ["src/migration/**/*.ts"],
+  //   subscribers: ["src/subscriber/**/*.ts"],
+  //   cli: {
+  //     entitiesDir: "src/entity",
+  //     migrationsDir: "src/migration",
+  //     subscribersDir: "src/subscriber",
+  //   },
+  // });
+
+  // LAPTOP CONFIG
+
   await createConnection({
     type: "postgres",
     host: "localhost",
     port: 5432,
     username: "postgres",
-    password: "root",
-    database: "cql",
+    password: "postgres",
+    database: "coachql",
     synchronize: true,
     logging: true,
     entities: ["src/entity/**/*.ts"],

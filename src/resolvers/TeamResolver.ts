@@ -1,21 +1,17 @@
 import {
   Arg,
   Ctx,
-  FieldResolver,
   Mutation,
   Query,
   Resolver,
-  Root,
   UseMiddleware,
+  FieldResolver,
 } from "type-graphql";
-import { User } from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
-import { verify } from "jsonwebtoken";
 import { Team } from "../entity/Team";
-import { getConnection, getRepository } from "typeorm";
-import { Workout } from "../entity/Workout";
-
+import { getRepository, getManager } from "typeorm";
+import { Organization } from "../entity/Organization";
 @Resolver(() => Team)
 export class TeamResolver {
   @Query(() => [Team])
@@ -35,46 +31,39 @@ export class TeamResolver {
   }
 
   @FieldResolver()
-  async headCoach(@Root() team: Team) {
-    const headCoach = await getConnection()
-      .createQueryBuilder()
-      .relation(Team, "headCoach")
-      .of(team)
-      .loadOne();
-    return headCoach;
-  }
-
-  @FieldResolver()
-  async workouts(@Root() team: Team) {
-    const workouts = await getRepository(Workout).find({
-      where: { team: team.id },
+  @UseMiddleware(isAuth)
+  async organization(@Ctx() { payload }: MyContext) {
+    const org = await getRepository(Organization).findOne({
+      where: { owner: payload?.userId },
     });
-    return workouts;
+    return org;
   }
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
-  async registerTeam(
+  async createTeam(
     @Arg("teamName") teamName: string,
-    @Ctx() context: MyContext
+    @Arg("orgId") orgId: number,
+    @Ctx() { payload }: MyContext
   ) {
-    try {
-      const authorization = context.req.headers["authorization"];
-      if (!authorization) return false;
-      const token = authorization.split(" ")[1];
-      if (token === undefined) return false;
-      const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
-      const user = await User.findOne(payload.userId);
-      if (user) {
-        await Team.insert({
-          teamName,
-          headCoach: user,
-        });
+    if (payload) {
+      const org = await Organization.findOne(orgId);
+      const newTeam = await Team.insert({
+        teamName,
+        organization: org,
+      });
+      if (newTeam) {
         return true;
       }
-    } catch (err) {
-      console.error(err);
     }
+    return false;
+  }
+
+  @Mutation(() => Boolean)
+  async deleteTeam(@Arg("teamId") teamId: number) {
+    const manager = getManager();
+    const team = await Team.findOne(teamId);
+    await manager.remove(team);
     return true;
   }
 }
