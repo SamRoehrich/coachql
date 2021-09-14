@@ -8,11 +8,11 @@ import {
   Root,
   UseMiddleware,
 } from "type-graphql";
-import { getConnection, getRepository } from "typeorm";
-import { Team } from "../entity/Team";
 import { Workout } from "../entity/Workout";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
+import { Organization } from "../entity/Organization";
+import { getConnection, getRepository } from "typeorm";
 
 export interface Interval {
   minutes: number;
@@ -47,15 +47,15 @@ export class WorkoutResolver {
     //   intervals
     // );
     if (payload) {
-      const team = await Team.findOne({
+      const org = await Organization.findOne({
         where: {
-          headCoach: payload?.userId,
+          owner: payload?.userId,
         },
       });
 
       console.log("cw" + teamId);
-      if (team) {
-        console.log("team" + team);
+      if (org) {
+        console.log("org" + org);
         const insertRes = await getConnection()
           .createQueryBuilder()
           .insert()
@@ -77,7 +77,7 @@ export class WorkoutResolver {
             where: { id: insertRes.identifiers[0].id },
           });
           if (workout) {
-            workout.team = team;
+            workout.organization = org;
             await connection.manager.save(workout);
             return true;
           }
@@ -88,10 +88,10 @@ export class WorkoutResolver {
   }
 
   @FieldResolver()
-  async team(@Root() workout: Workout) {
+  async organization(@Root() workout: Workout) {
     const team = await getConnection()
       .createQueryBuilder()
-      .relation(Workout, "team")
+      .relation(Workout, "organization")
       .of(workout)
       .loadOne();
     return team;

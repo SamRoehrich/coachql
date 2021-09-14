@@ -12,19 +12,27 @@ import { Organization } from "../entity/Organization";
 import { User } from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
-import { Team } from "../entity/Team";
 import { getRepository } from "typeorm";
 import { Workout } from "../entity/Workout";
+// import { Athlete } from "../entity/Athlete";
 
 @Resolver(() => Organization)
 export class OrganizationResolver {
   @FieldResolver()
-  async workouts(@Root() team: Team) {
+  async workouts(@Root() org: Organization) {
     const workouts = await getRepository(Workout).find({
-      where: { team: team.id },
+      where: { organization: org.id },
     });
     return workouts;
   }
+
+  // @FieldResolver()
+  // async athletes(@Root() org: Organization) {
+  //   const workouts = await getRepository(Athlete).find({
+  //     where: { organization: org.id },
+  //   });
+  //   return workouts;
+  // }
 
   @Query(() => [Organization])
   async getOrganizations() {

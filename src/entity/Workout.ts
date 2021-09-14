@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Team } from "./Team";
+import { Organization } from "./Organization";
 
 @ObjectType()
 @Entity("workouts")
@@ -43,7 +43,7 @@ export class Workout extends BaseEntity {
   @Column()
   equiptment: string;
 
-  @Field(() => Team)
-  @ManyToOne(() => Team, (team) => team.id)
-  team: Team;
+  @Field(() => Organization)
+  @ManyToOne(() => Organization, (organization) => organization.id)
+  organization: Organization;
 }
