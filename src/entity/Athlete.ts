@@ -25,7 +25,7 @@ export class Athlete extends BaseEntity {
   @Column()
   gender: Gender;
 
-  @Field(() => User)
+  @Field(() => User, { nullable: true, defaultValue: null })
   @OneToOne(() => User)
   @JoinColumn()
   user: User;
@@ -36,15 +36,15 @@ export class Athlete extends BaseEntity {
 
   @Field()
   @ManyToOne(() => Organization)
-  organization: Organization
+  organization: Organization;
 
   @Field()
-  @ManyToOne(() => Team, { nullable: true})
-  team: Team
+  @ManyToOne(() => Team, { nullable: true })
+  team: Team;
 
   // group
 
   @Field()
   @ManyToOne(() => TrainingPlan)
-  trainingPlan: TrainingPlan
+  trainingPlan: TrainingPlan;
 }
