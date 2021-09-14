@@ -23,6 +23,7 @@ import { BoulderResolver } from "./resolvers/BoulderResolver";
 import { RunningOrderResolver } from "./resolvers/RunningOrderResolver";
 import { WorkoutResolver } from "./resolvers/WorkoutsResolver";
 import { OrganizationResolver } from "./resolvers/OrganizationResolver";
+import { CoachResolver } from "./resolvers/CoachResolver";
 
 (async () => {
   const app = express();
@@ -108,34 +109,19 @@ import { OrganizationResolver } from "./resolvers/OrganizationResolver";
   //   },
   // });
 
-  // await createConnection({
-  //   type: "postgres",
-  //   host: "localhost",
-  //   port: 5432,
-  //   username: "postgres",
-  //   password: "root",
-  //   database: "cql",
-  //   synchronize: true,
-  //   logging: true,
-  //   entities: ["src/entity/**/*.ts"],
-  //   migrations: ["src/migration/**/*.ts"],
-  //   subscribers: ["src/subscriber/**/*.ts"],
-  //   cli: {
-  //     entitiesDir: "src/entity",
-  //     migrationsDir: "src/migration",
-  //     subscribersDir: "src/subscriber",
-  //   },
-  // });
-
-  // LAPTOP CONFIG
-
   await createConnection({
     type: "postgres",
-    host: "localhost",
+    host: "ec2-44-195-201-3.compute-1.amazonaws.com",
     port: 5432,
-    username: "postgres",
-    password: "postgres",
-    database: "coachql",
+    username: "idktswroxxygzz",
+    password:
+      "5d3d800fe23125d3fd329c87f829384f78f100e8f576824d42d2ad5cab057a94",
+    extra: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
+    database: "dfe6qj9uto43fu",
     synchronize: true,
     logging: true,
     entities: ["src/entity/**/*.ts"],
@@ -147,6 +133,27 @@ import { OrganizationResolver } from "./resolvers/OrganizationResolver";
       subscribersDir: "src/subscriber",
     },
   });
+
+  // LAPTOP CONFIG
+
+  // await createConnection({
+  //   type: "postgres",
+  //   host: "localhost",
+  //   port: 5432,
+  //   username: "postgres",
+  //   password: "postgres",
+  //   database: "coachql",
+  //   synchronize: true,
+  //   logging: true,
+  //   entities: ["src/entity/**/*.ts"],
+  //   migrations: ["src/migration/**/*.ts"],
+  //   subscribers: ["src/subscriber/**/*.ts"],
+  //   cli: {
+  //     entitiesDir: "src/entity",
+  //     migrationsDir: "src/migration",
+  //     subscribersDir: "src/subscriber",
+  //   },
+  // });
 
   const apolloServer = new ApolloServer({
     tracing: true,
@@ -161,6 +168,7 @@ import { OrganizationResolver } from "./resolvers/OrganizationResolver";
         RunningOrderResolver,
         WorkoutResolver,
         OrganizationResolver,
+        CoachResolver,
       ],
     }),
     context: ({ req, res }) => ({ req, res }),

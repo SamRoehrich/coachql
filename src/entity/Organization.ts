@@ -8,6 +8,8 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
 } from "typeorm";
+import { Athlete } from "./Athlete";
+import { Coach } from "./Coach";
 import { User } from "./User";
 import { Workout } from "./Workout";
 
@@ -30,4 +32,12 @@ export class Organization extends BaseEntity {
   @Field(() => [Workout])
   @OneToMany(() => Workout, (workout) => workout.id)
   workouts: Workout[];
+
+  @Field(() => [Athlete])
+  @OneToMany(() => Athlete, (athlete) => athlete.id)
+  athletes: Athlete[];
+
+  @Field(() => [Coach])
+  @OneToMany(() => Coach, (coach) => coach.id)
+  coaches: Coach[];
 }
