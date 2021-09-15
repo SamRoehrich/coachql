@@ -1,5 +1,13 @@
 import { hash } from "bcryptjs";
-import { Arg, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
+import {
+  Arg,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+  UseMiddleware,
+} from "type-graphql";
 import { getConnection } from "typeorm";
 import { Athlete } from "../entity/Athlete";
 import { User } from "../entity/User";
@@ -16,17 +24,15 @@ export class AthleteResolver {
     return await Athlete.find();
   }
 
-  // Fix FIRST
-
-  // @FieldResolver()
-  // async user(@Root() athlete: Athlete) {
-  //   console.log(athlete);
-  //   const user = await getRepository(User).findOne({
-  //     where: { id: athlete.user },
-  //   });
-  //   console.log(user);
-  //   return user;
-  // }
+  @FieldResolver()
+  async user(@Root() athlete: Athlete) {
+    const user = await getConnection()
+      .createQueryBuilder()
+      .relation(Athlete, "user")
+      .of(athlete)
+      .loadOne();
+    return user;
+  }
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
