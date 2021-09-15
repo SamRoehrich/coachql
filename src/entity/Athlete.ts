@@ -22,16 +22,20 @@ export class Athlete extends BaseEntity {
   id: number;
 
   @Field(() => Gender)
-  @Column()
+  @Column({ nullable: true, default: null })
   gender: Gender;
 
-  @Field(() => User, { nullable: true, defaultValue: null })
+  @Field(() => User)
   @OneToOne(() => User)
   @JoinColumn()
   user: User;
 
-  @Field(() => Int)
+  @Field()
   @Column()
+  parentEmail: string;
+
+  @Field(() => Int)
+  @Column({ nullable: true, default: null })
   birthYear: number;
 
   @Field()

@@ -26,6 +26,13 @@ export class OrganizationResolver {
     return workouts;
   }
 
+  @FieldResolver()
+  @UseMiddleware(isAuth)
+  async owner(@Ctx() { payload }: MyContext) {
+    const owner = await User.findOne(payload?.userId);
+    return owner;
+  }
+
   // @FieldResolver()
   // async athletes(@Root() org: Organization) {
   //   const workouts = await getRepository(Athlete).find({

@@ -18,6 +18,7 @@ import {
   sendRefreshToken,
 } from "../utils/auth";
 import { verify } from "jsonwebtoken";
+import { getConnection } from "typeorm";
 
 @ObjectType()
 class LoginResponse {
@@ -100,6 +101,21 @@ export class UserResolver {
   async logout(@Ctx() context: MyContext) {
     sendRefreshToken(context.res, "");
     return true;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async activeUser(@Ctx() { payload }: MyContext) {
+    const updateRes = await getConnection()
+      .createQueryBuilder()
+      .update(User)
+      .set({ active: true })
+      .where("id = :id", { id: payload?.userId })
+      .execute();
+    if (updateRes) {
+      return true;
+    }
+    return false;
   }
 
   @Mutation(() => LoginResponse)

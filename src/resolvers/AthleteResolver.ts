@@ -9,18 +9,24 @@ import { isAuth } from "../utils/auth";
 // import { getAgeCatagory } from "../utils/athlete";
 // import { isFemale } from "../utils/stack";
 
-@Resolver()
+@Resolver(() => Athlete)
 export class AthleteResolver {
   @Query(() => [Athlete])
-  async athletes(@Arg("eventId") eventId: string) {
-    const event = await Event.findOne(eventId);
-    const athletes = await getConnection()
-      .createQueryBuilder()
-      .relation(Athlete, "user")
-      .of(event)
-      .loadMany();
-    return athletes;
+  async athletes() {
+    return await Athlete.find();
   }
+
+  // Fix FIRST
+
+  // @FieldResolver()
+  // async user(@Root() athlete: Athlete) {
+  //   console.log(athlete);
+  //   const user = await getRepository(User).findOne({
+  //     where: { id: athlete.user },
+  //   });
+  //   console.log(user);
+  //   return user;
+  // }
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
@@ -28,9 +34,9 @@ export class AthleteResolver {
     @Arg("firstName") firstName: string,
     @Arg("lastName") lastName: string,
     @Arg("email") email: string,
-    @Arg("parentEmail") parentEmail: string,
-    @Arg("team") team: string
+    @Arg("parentEmail") parentEmail: string
   ) {
+    //check if user already exists
     const exisdtingUser = await User.findOne({
       where: {
         email,
@@ -38,21 +44,42 @@ export class AthleteResolver {
     });
 
     if (exisdtingUser) {
+      // check if there is an existing athlete profile
       const athleteProfile = await Athlete.findOne({
         where: { user: exisdtingUser },
       });
       if (athleteProfile) {
         return false;
       }
+      if (athleteProfile === undefined) {
+        // no profile? ok. create one
+        const newAthlete = await Athlete.insert({
+          user: exisdtingUser,
+          parentEmail,
+        });
+        if (newAthlete) {
+          return true;
+        }
+      }
+      console.log("user exists but can not be added to an athlete profile.");
+      return false;
     }
     const newUser = await User.insert({
       email,
       firstName,
       lastName,
     });
-    console.log(newUser);
-    console.log(parentEmail, team);
-    return true;
+    if (newUser) {
+      const user = await User.findOne(newUser.identifiers[0].id);
+      const newAthlete = await Athlete.insert({
+        parentEmail,
+        user,
+      });
+      if (newAthlete) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Mutation(() => Boolean)

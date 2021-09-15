@@ -23,6 +23,10 @@ export class User extends BaseEntity {
   @Column({ nullable: true, default: null })
   password: string;
 
+  @Field()
+  @Column({ default: false })
+  active: boolean;
+
   @Column("int", { default: 0 })
   tokenVersion: number;
 }
