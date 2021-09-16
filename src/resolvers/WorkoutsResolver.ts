@@ -27,62 +27,119 @@ export class WorkoutResolver {
   @UseMiddleware(isAuth)
   async createWorkout(
     @Arg("name") name: string,
-    @Arg("sets") sets: number,
+    @Arg("sets") sets: string,
     @Arg("description") description: string,
     @Arg("workoutType") workoutType: string,
-    @Arg("timerType") timerType: string,
     @Arg("equiptment") equiptment: string,
-    @Arg("intervals") intervals: string,
-    @Arg("teamId") teamId: string,
+    @Arg("numSets") numSets: number,
     @Ctx() { payload }: MyContext
   ) {
-    // console.log(
-    //   name,
-    //   sets,
-    //   description,
-    //   workoutType,
-    //   payload,
-    //   timerType,
-    //   equiptment,
-    //   intervals
-    // );
-    if (payload) {
-      const org = await Organization.findOne({
-        where: {
-          owner: payload?.userId,
-        },
+    const organization = await Organization.findOne({
+      owner: { id: payload?.userId },
+    });
+    if (organization) {
+      const newWorkout = await Workout.insert({
+        name,
+        sets,
+        description,
+        workoutType,
+        equiptment,
+        numSets,
+        organization,
       });
-
-      console.log("cw" + teamId);
-      if (org) {
-        console.log("org" + org);
-        const insertRes = await getConnection()
-          .createQueryBuilder()
-          .insert()
-          .into(Workout)
-          .values({
-            name,
-            sets,
-            description,
-            workoutType,
-            timerType,
-            intervals,
-            equiptment,
-          })
-          .execute();
-        if (insertRes) {
-          console.log(insertRes);
-          const connection = getConnection();
-          const workout = await Workout.findOne({
-            where: { id: insertRes.identifiers[0].id },
-          });
-          if (workout) {
-            workout.organization = org;
-            await connection.manager.save(workout);
-            return true;
-          }
-        }
+      if (newWorkout) {
+        return true;
       }
+    }
+    return false;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async updateWorkoutDescription(
+    @Arg("workoutId") workoutId: number,
+    @Arg("description") description: string
+  ) {
+    const updateRes = await getConnection()
+      .createQueryBuilder()
+      .update(Workout)
+      .set({ description })
+      .where("id = :id", { id: workoutId })
+      .execute();
+    if (updateRes) {
+      return true;
+    }
+    return false;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async updateWorkoutName(
+    @Arg("workoutId") workoutId: number,
+    @Arg("name") name: string
+  ) {
+    const updateRes = await getConnection()
+      .createQueryBuilder()
+      .update(Workout)
+      .set({ name })
+      .where("id = :id", { id: workoutId })
+      .execute();
+    if (updateRes) {
+      return true;
+    }
+    return false;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async updateWorkoutType(
+    @Arg("workoutId") workoutId: number,
+    @Arg("workoutType") workoutType: string
+  ) {
+    const updateRes = await getConnection()
+      .createQueryBuilder()
+      .update(Workout)
+      .set({ workoutType })
+      .where("id = :id", { id: workoutId })
+      .execute();
+    if (updateRes) {
+      return true;
+    }
+    return false;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async updateWorkoutEquiptment(
+    @Arg("workoutId") workoutId: number,
+    @Arg("equiptment") equiptment: string
+  ) {
+    const updateRes = await getConnection()
+      .createQueryBuilder()
+      .update(Workout)
+      .set({ equiptment })
+      .where("id = :id", { id: workoutId })
+      .execute();
+    if (updateRes) {
+      return true;
+    }
+    return false;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async updateWorkoutSets(
+    @Arg("workoutId") workoutId: number,
+    @Arg("sets") sets: string
+  ) {
+    const updateRes = await getConnection()
+      .createQueryBuilder()
+      .update(Workout)
+      .set({ sets })
+      .where("id = :id", { id: workoutId })
+      .execute();
+    if (updateRes) {
+      return true;
     }
     return false;
   }
@@ -133,13 +190,3 @@ export class WorkoutResolver {
     return null;
   }
 }
-
-// interface InitialValues {
-//   name: string;
-//   description: string;
-//   sets: number;
-//   equiptment: string;
-//   workoutType: string;
-//   timerType: string;
-//   intervals: Interval[];
-// }

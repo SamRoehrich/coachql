@@ -21,7 +21,7 @@ export class Workout extends BaseEntity {
 
   @Field(() => Int)
   @Column()
-  sets: number;
+  numSets: number;
 
   @Field(() => String)
   @Column()
@@ -31,13 +31,9 @@ export class Workout extends BaseEntity {
   @Column()
   workoutType: string;
 
-  @Field(() => String)
+  @Field()
   @Column()
-  timerType: string;
-
-  @Field(() => String)
-  @Column()
-  intervals: string;
+  sets: string;
 
   @Field(() => String)
   @Column()

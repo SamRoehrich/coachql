@@ -1,4 +1,3 @@
-import { hash } from "bcryptjs";
 import {
   Arg,
   FieldResolver,
@@ -12,9 +11,9 @@ import { getConnection } from "typeorm";
 import { Athlete } from "../entity/Athlete";
 import { User } from "../entity/User";
 import { Event } from "../entity/Event";
-import { Gender } from "../entity/Stack";
 import { isAuth } from "../utils/auth";
 import { Organization } from "../entity/Organization";
+import { Team } from "../entity/Team";
 // import { getAgeCatagory } from "../utils/athlete";
 // import { isFemale } from "../utils/stack";
 
@@ -35,6 +34,54 @@ export class AthleteResolver {
     return user;
   }
 
+  @FieldResolver()
+  async organization(@Root() athlete: Athlete) {
+    const organization = await getConnection()
+      .createQueryBuilder()
+      .relation(Athlete, "organization")
+      .of(athlete)
+      .loadOne();
+    return organization;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async addAthleteToTeam(
+    @Arg("athleteId") athleteId: number,
+    @Arg("teamId") teamId: number
+  ) {
+    const athlete = await Athlete.findOne(athleteId);
+    const team = await Team.findOne(teamId);
+
+    if (team && athlete) {
+      await getConnection()
+        .createQueryBuilder()
+        .relation(Athlete, "team")
+        .of(athlete)
+        .set(team);
+      return true;
+    }
+    return false;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async deleteAthleteProfile(@Arg("athleteId") athleteId: number) {
+    const athlete = await Athlete.findOne(athleteId);
+    if (athlete) {
+      const deleteRes = await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(Athlete)
+        .where("id = :id", { id: athleteId })
+        .execute();
+      if (deleteRes) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async createAthleteProfile(
@@ -44,6 +91,7 @@ export class AthleteResolver {
     @Arg("parentEmail") parentEmail: string,
     @Arg("orgId") orgId: number
   ) {
+    const organization = await Organization.findOne(orgId);
     //check if user already exists
     const exisdtingUser = await User.findOne({
       where: {
@@ -64,6 +112,7 @@ export class AthleteResolver {
         const newAthlete = await Athlete.insert({
           user: exisdtingUser,
           parentEmail,
+          organization,
         });
         if (newAthlete) {
           return true;
@@ -79,7 +128,6 @@ export class AthleteResolver {
     });
     if (newUser) {
       const user = await User.findOne(newUser.identifiers[0].id);
-      const organization = await Organization.findOne(orgId);
       const newAthlete = await Athlete.insert({
         parentEmail,
         user,
@@ -90,34 +138,6 @@ export class AthleteResolver {
       }
     }
     return false;
-  }
-
-  @Mutation(() => Boolean)
-  async createAthlete(
-    @Arg("email") email: string,
-    @Arg("password") password: string,
-    @Arg("firstName") firstName: string,
-    @Arg("lastName") lastName: string,
-    @Arg("birthYear") birthYear: number,
-    // @Arg("team") team: string,
-    @Arg("gender") gender: Gender
-  ) {
-    const hashedPassword = await hash(password, 12);
-    await User.insert({
-      lastName,
-      firstName,
-      email,
-      password: hashedPassword,
-    });
-
-    const user = await User.findOne({ where: { email } });
-    const athlete = await Athlete.insert({ user, birthYear, gender });
-
-    if (athlete) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   @Mutation(() => Boolean)

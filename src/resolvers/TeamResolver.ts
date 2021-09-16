@@ -6,12 +6,14 @@ import {
   Resolver,
   UseMiddleware,
   FieldResolver,
+  Root,
 } from "type-graphql";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
 import { Team } from "../entity/Team";
 import { getRepository, getManager } from "typeorm";
 import { Organization } from "../entity/Organization";
+import { Athlete } from "../entity/Athlete";
 @Resolver(() => Team)
 export class TeamResolver {
   @Query(() => [Team])
@@ -39,23 +41,29 @@ export class TeamResolver {
     return org;
   }
 
+  @FieldResolver()
+  async athletes(@Root() team: Team) {
+    const athletes = await getRepository(Athlete).find({
+      where: { team: team.id },
+    });
+    return athletes;
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async createTeam(
     @Arg("teamName") teamName: string,
-    @Arg("orgId") orgId: number,
-    @Ctx() { payload }: MyContext
+    @Arg("orgId") orgId: number
   ) {
-    if (payload) {
-      const org = await Organization.findOne(orgId);
-      const newTeam = await Team.insert({
-        teamName,
-        organization: org,
-      });
-      if (newTeam) {
-        return true;
-      }
+    const org = await Organization.findOne(orgId);
+    const newTeam = await Team.insert({
+      teamName,
+      organization: org,
+    });
+    if (newTeam) {
+      return true;
     }
+
     return false;
   }
 

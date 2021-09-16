@@ -12,6 +12,7 @@ import { Athlete } from "./Athlete";
 import { Coach } from "./Coach";
 import { User } from "./User";
 import { Workout } from "./Workout";
+import { Team } from "./Team";
 
 @ObjectType()
 @Entity("organizations")
@@ -28,6 +29,10 @@ export class Organization extends BaseEntity {
   @OneToOne(() => User)
   @JoinColumn()
   owner: User;
+
+  @Field(() => [Team])
+  @OneToMany(() => Team, (Team) => Team.id)
+  teams: Team[];
 
   @Field(() => [Workout])
   @OneToMany(() => Workout, (workout) => workout.id)
