@@ -104,8 +104,26 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
+  async activateAthlete(
+    @Arg("password") password: string,
+    @Arg("userId") userId: number
+  ) {
+    const hashedPassword = await hash(password, 12);
+    const updateRes = await getConnection()
+      .createQueryBuilder()
+      .update(User)
+      .set({ active: true, password: hashedPassword })
+      .where("id = :id", { id: userId })
+      .execute();
+    if (updateRes) {
+      return true;
+    }
+    return false;
+  }
+
+  @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
-  async activeUser(@Ctx() { payload }: MyContext) {
+  async activateUser(@Ctx() { payload }: MyContext) {
     const updateRes = await getConnection()
       .createQueryBuilder()
       .update(User)
