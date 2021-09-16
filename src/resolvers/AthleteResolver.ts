@@ -14,6 +14,7 @@ import { User } from "../entity/User";
 import { Event } from "../entity/Event";
 import { Gender } from "../entity/Stack";
 import { isAuth } from "../utils/auth";
+import { Organization } from "../entity/Organization";
 // import { getAgeCatagory } from "../utils/athlete";
 // import { isFemale } from "../utils/stack";
 
@@ -40,7 +41,8 @@ export class AthleteResolver {
     @Arg("firstName") firstName: string,
     @Arg("lastName") lastName: string,
     @Arg("email") email: string,
-    @Arg("parentEmail") parentEmail: string
+    @Arg("parentEmail") parentEmail: string,
+    @Arg("orgId") orgId: number
   ) {
     //check if user already exists
     const exisdtingUser = await User.findOne({
@@ -77,9 +79,11 @@ export class AthleteResolver {
     });
     if (newUser) {
       const user = await User.findOne(newUser.identifiers[0].id);
+      const organization = await Organization.findOne(orgId);
       const newAthlete = await Athlete.insert({
         parentEmail,
         user,
+        organization,
       });
       if (newAthlete) {
         return true;
