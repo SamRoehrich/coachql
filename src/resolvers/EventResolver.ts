@@ -12,10 +12,7 @@ import { User } from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
 import { getConnection } from "typeorm";
-import { Gender } from "../entity/Stack";
 import { Boulder } from "../entity/Boulder";
-import { UserResolver } from "./UserResolver";
-import { Athletes } from "../utils/seed";
 import { RunningOrderResolver } from "./RunningOrderResolver";
 @Resolver()
 export class EventResolver {
@@ -170,109 +167,109 @@ export class EventResolver {
     return true;
   }
 
-  @Mutation(() => Boolean)
-  async seedEvent(@Arg("eventId") evnetId: string) {
-    let i = 0;
-    const seed = Athletes;
-    while (i < seed.length) {
-      let { firstName, lastName, email, password, birthYear, gender } =
-        seed[i];
-      await this.registerForEvent(
-        evnetId,
-        email,
-        password,
-        firstName,
-        lastName,
-        birthYear,
-        gender
-      );
-      i++;
-    }
-    return true;
-  }
+  // @Mutation(() => Boolean)
+  // async seedEvent(@Arg("eventId") evnetId: string) {
+  //   let i = 0;
+  //   const seed = Athletes;
+  //   while (i < seed.length) {
+  //     let { firstName, lastName, email, password, birthYear, gender } =
+  //       seed[i];
+  //     await this.registerForEvent(
+  //       evnetId,
+  //       email,
+  //       password,
+  //       firstName,
+  //       lastName,
+  //       birthYear,
+  //       gender
+  //     );
+  //     i++;
+  //   }
+  //   return true;
+  // }
 
-  @Mutation(() => Boolean)
-  async registerForEvent(
-    @Arg("eventId") eventId: string,
-    @Arg("email") email: string,
-    @Arg("password") password: string,
-    @Arg("firstName") firstName: string,
-    @Arg("lastName") lastName: string,
-    // @Arg("team") team: string,
-    @Arg("birthYear") birthYear: number,
-    @Arg("gender") gender: Gender
-  ) {
-    const userResolver = new UserResolver();
-    const user = await userResolver.internalLogin(email, password);
-    if (user) {
-      const athlete = await Athlete.findOne({ where: { user: user.id } });
-      if (athlete) {
-        await getConnection()
-          .createQueryBuilder()
-          .relation(Event, "athletes")
-          .of(eventId)
-          .add(athlete);
-        return true;
-      }
-    }
-    await userResolver.register(email, password, firstName, lastName);
-    const newUser = await User.findOne({ where: { email } });
-    if (newUser) {
-      await Athlete.insert({
-        birthYear,
-        // team,
-        user: newUser,
-        gender,
-      });
-      const newAthlete = await Athlete.findOne({ where: { user: newUser.id } });
-      if (newAthlete) {
-        // const ageCat = getAgeCatagory(birthYear);
-        await getConnection()
-          .createQueryBuilder()
-          .relation(Event, "athletes")
-          .of(eventId)
-          .add(newAthlete);
-        return true;
-        //   if (newAthlete.male) {
-        //     const stacks = await Stack.find({
-        //       where: { male: true, event: eventId },
-        //     });
-        //     for (let x = 0; x < stacks.length; x++) {
-        //       console.log(stacks[x]);
-        //       for (const [key, value] of Object.entries(stacks[x])) {
-        //         if (key === ageCat) {
-        //           if (value === true) {
-        //             console.log(key + value + stacks[x].id);
-        //             await getConnection()
-        //               .createQueryBuilder()
-        //               .relation(Stack, "athletes")
-        //               .of(stacks[x])
-        //               .add(newAthlete);
-        //             return true;
-        //           }
-        //         }
-        //       }
-        //     }
-        //   } else {
-        //     const stacks = await Stack.find({ where: { female: true } });
-        //     for (let x = 0; x < stacks.length; x++) {
-        //       console.log(stacks[x]);
-        //       for (const [key, value] of Object.entries(stacks[x])) {
-        //         if (key === ageCat) {
-        //           if (value === true) {
-        //             await getConnection()
-        //               .createQueryBuilder()
-        //               .relation(Stack, "athletes")
-        //               .of(stacks[x])
-        //               .add(newAthlete);
-        //             return true;
-        //           }
-        //         }
-        //       }
-        //     }
-        //   }
-        //   return false;
-      } else return false;
-    } else return false;
-  }
+  // @Mutation(() => Boolean)
+  // async registerForEvent(
+  //   @Arg("eventId") eventId: string,
+  //   @Arg("email") email: string,
+  //   @Arg("password") password: string,
+  //   @Arg("firstName") firstName: string,
+  //   @Arg("lastName") lastName: string,
+  //   // @Arg("team") team: string,
+  //   @Arg("birthYear") birthYear: number,
+  //   @Arg("gender") gender: Gender
+  // ) {
+  //   const userResolver = new UserResolver();
+  //   const user = await userResolver.internalLogin(email, password);
+  //   if (user) {
+  //     const athlete = await Athlete.findOne({ where: { user: user.id } });
+  //     if (athlete) {
+  //       await getConnection()
+  //         .createQueryBuilder()
+  //         .relation(Event, "athletes")
+  //         .of(eventId)
+  //         .add(athlete);
+  //       return true;
+  //     }
+  //   }
+  //   await userResolver.register(email, password, firstName, lastName);
+  //   const newUser = await User.findOne({ where: { email } });
+  //   if (newUser) {
+  //     await Athlete.insert({
+  //       birthYear,
+  //       // team,
+  //       user: newUser,
+  //       gender,
+  //     });
+  //     const newAthlete = await Athlete.findOne({ where: { user: newUser.id } });
+  //     if (newAthlete) {
+  //       // const ageCat = getAgeCatagory(birthYear);
+  //       await getConnection()
+  //         .createQueryBuilder()
+  //         .relation(Event, "athletes")
+  //         .of(eventId)
+  //         .add(newAthlete);
+  //       return true;
+  //       //   if (newAthlete.male) {
+  //       //     const stacks = await Stack.find({
+  //       //       where: { male: true, event: eventId },
+  //       //     });
+  //       //     for (let x = 0; x < stacks.length; x++) {
+  //       //       console.log(stacks[x]);
+  //       //       for (const [key, value] of Object.entries(stacks[x])) {
+  //       //         if (key === ageCat) {
+  //       //           if (value === true) {
+  //       //             console.log(key + value + stacks[x].id);
+  //       //             await getConnection()
+  //       //               .createQueryBuilder()
+  //       //               .relation(Stack, "athletes")
+  //       //               .of(stacks[x])
+  //       //               .add(newAthlete);
+  //       //             return true;
+  //       //           }
+  //       //         }
+  //       //       }
+  //       //     }
+  //       //   } else {
+  //       //     const stacks = await Stack.find({ where: { female: true } });
+  //       //     for (let x = 0; x < stacks.length; x++) {
+  //       //       console.log(stacks[x]);
+  //       //       for (const [key, value] of Object.entries(stacks[x])) {
+  //       //         if (key === ageCat) {
+  //       //           if (value === true) {
+  //       //             await getConnection()
+  //       //               .createQueryBuilder()
+  //       //               .relation(Stack, "athletes")
+  //       //               .of(stacks[x])
+  //       //               .add(newAthlete);
+  //       //             return true;
+  //       //           }
+  //       //         }
+  //       //       }
+  //       //     }
+  //       //   }
+  //       //   return false;
+  //     } else return false;
+  //   } else return false;
+  // }
 }

@@ -84,6 +84,24 @@ export class AthleteResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
+  async updateAthleteBirthYear(
+    @Arg("athleteId") athleteId: number,
+    @Arg("birthYear") birthYear: number
+  ) {
+    const updateRes = await getConnection()
+      .createQueryBuilder()
+      .update(Athlete)
+      .set({ birthYear })
+      .where("id = :id", { id: athleteId })
+      .execute();
+    if (updateRes) {
+      return true;
+    }
+    return false;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
   async createAthleteProfile(
     @Arg("firstName") firstName: string,
     @Arg("lastName") lastName: string,

@@ -12,10 +12,11 @@ import { Organization } from "../entity/Organization";
 import { User } from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../utils/auth";
-import { getRepository } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
 import { Workout } from "../entity/Workout";
 import { Athlete } from "../entity/Athlete";
 import { Team } from "../entity/Team";
+import { Coach } from "../entity/Coach";
 // import { Athlete } from "../entity/Athlete";
 
 @Resolver(() => Organization)
@@ -51,9 +52,37 @@ export class OrganizationResolver {
     return athletes;
   }
 
+  @FieldResolver()
+  async coaches(@Root() org: Organization) {
+    const coaches = await getRepository(Coach).find({
+      where: { organization: org.id },
+    });
+    return coaches;
+  }
+
   @Query(() => [Organization])
   async getOrganizations() {
     return await Organization.find();
+  }
+
+  @Query(() => Organization)
+  @UseMiddleware(isAuth)
+  async getOrganization(@Ctx() { payload }: MyContext) {
+    const coach = await Coach.findOne({
+      where: {
+        user: {
+          id: payload!.userId,
+        },
+      },
+    });
+    console.log(coach);
+
+    const org = await getConnection()
+      .createQueryBuilder()
+      .relation(Coach, "organization")
+      .of(coach)
+      .loadOne();
+    return org;
   }
 
   @Mutation(() => Boolean)
