@@ -44,6 +44,16 @@ export class AthleteResolver {
     return organization;
   }
 
+  @FieldResolver()
+  async team(@Root() athlete: Athlete) {
+    const team = await getConnection()
+      .createQueryBuilder()
+      .relation(Athlete, "team")
+      .of(athlete)
+      .loadOne();
+    return team;
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async addAthleteToTeam(
