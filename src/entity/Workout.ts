@@ -42,4 +42,12 @@ export class Workout extends BaseEntity {
   @Field(() => Organization)
   @ManyToOne(() => Organization, (organization) => organization.id)
   organization: Organization;
+
+  @Field(() => Boolean)
+  @Column({ default: false, nullable: true })
+  recordClimbs: boolean;
+
+  @Field(() => Boolean)
+  @Column({ default: false, nullable: true })
+  notifications: boolean;
 }

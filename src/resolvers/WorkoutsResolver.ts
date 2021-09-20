@@ -32,6 +32,8 @@ export class WorkoutResolver {
     @Arg("workoutType") workoutType: string,
     @Arg("equiptment") equiptment: string,
     @Arg("numSets") numSets: number,
+    @Arg("recordClimbs") recordClimbs: boolean,
+    @Arg("notifications") notifications: boolean,
     @Ctx() { payload }: MyContext
   ) {
     const organization = await Organization.findOne({
@@ -46,6 +48,8 @@ export class WorkoutResolver {
         equiptment,
         numSets,
         organization,
+        recordClimbs,
+        notifications,
       });
       if (newWorkout) {
         return true;
