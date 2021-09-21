@@ -24,6 +24,16 @@ export class AthleteResolver {
     return await Athlete.find();
   }
 
+  @Query(() => Athlete)
+  async getAthleteById(@Arg("athleteId") athleteId: number) {
+    const athlete = await Athlete.findOne(athleteId);
+    if (athlete) {
+      return athlete;
+    } else {
+      return null;
+    }
+  }
+
   @FieldResolver()
   async user(@Root() athlete: Athlete) {
     const user = await getConnection()
