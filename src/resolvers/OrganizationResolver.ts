@@ -83,6 +83,20 @@ export class OrganizationResolver {
     }
   }
 
+  @Query(() => [Team])
+  @UseMiddleware(isAuth)
+  async getTeamsInOrg(@Ctx() context: MyContext) {
+    const org = await this.getOrganization(context);
+    const teams = await Team.find({
+      where: {
+        organization: {
+          id: org.id,
+        },
+      },
+    });
+    return teams;
+  }
+
   @Query(() => Organization)
   @UseMiddleware(isAuth)
   async getOrganization(@Ctx() { payload }: MyContext) {

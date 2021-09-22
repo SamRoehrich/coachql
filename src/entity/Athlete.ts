@@ -46,6 +46,14 @@ export class Athlete extends BaseEntity {
   @ManyToOne(() => Team, { nullable: true })
   team: Team;
 
+  @Field()
+  @Column({ nullable: true })
+  metricsRequired: boolean;
+
+  @Field()
+  @Column({ nullable: true })
+  createWorkouts: boolean;
+
   // group
 
   @Field()

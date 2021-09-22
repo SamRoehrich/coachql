@@ -1,5 +1,6 @@
 import {
   Arg,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -12,8 +13,9 @@ import { Athlete } from "../entity/Athlete";
 import { User } from "../entity/User";
 import { Event } from "../entity/Event";
 import { isAuth } from "../utils/auth";
-import { Organization } from "../entity/Organization";
 import { Team } from "../entity/Team";
+import { OrganizationResolver } from "./OrganizationResolver";
+import { MyContext } from "../types/MyContext";
 // import { getAgeCatagory } from "../utils/athlete";
 // import { isFemale } from "../utils/stack";
 
@@ -127,9 +129,16 @@ export class AthleteResolver {
     @Arg("lastName") lastName: string,
     @Arg("email") email: string,
     @Arg("parentEmail") parentEmail: string,
-    @Arg("orgId") orgId: number
+    @Arg("birthYear") birthYear: number,
+    @Arg("teamId") teamId: number,
+    @Arg("metricsRequired") metricsRequired: boolean,
+    @Arg("createWorkouts") createWorkouts: boolean,
+    @Ctx() context: MyContext
   ) {
-    const organization = await Organization.findOne(orgId);
+    const organization = await OrganizationResolver.prototype.getOrganization(
+      context
+    );
+    const team = await Team.findOne(teamId);
     //check if user already exists
     const exisdtingUser = await User.findOne({
       where: {
@@ -151,6 +160,10 @@ export class AthleteResolver {
           user: exisdtingUser,
           parentEmail,
           organization,
+          birthYear,
+          team,
+          createWorkouts,
+          metricsRequired,
         });
         if (newAthlete) {
           return true;
@@ -170,6 +183,10 @@ export class AthleteResolver {
         parentEmail,
         user,
         organization,
+        birthYear,
+        team,
+        createWorkouts,
+        metricsRequired,
       });
       if (newAthlete) {
         return true;
