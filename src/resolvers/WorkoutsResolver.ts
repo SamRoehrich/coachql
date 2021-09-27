@@ -158,13 +158,6 @@ export class WorkoutResolver {
     return team;
   }
 
-  @Query(() => [Workout])
-  async getWorkouts() {
-    const workouts = await Workout.find();
-    if (workouts) return workouts;
-    return null;
-  }
-
   @Mutation(() => Boolean)
   async deleteWorkout(@Arg("workoutId") workoutId: number) {
     await getConnection().manager.delete(Workout, workoutId);

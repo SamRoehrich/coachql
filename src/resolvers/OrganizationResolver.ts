@@ -83,6 +83,24 @@ export class OrganizationResolver {
     }
   }
 
+  @Query(() => [Workout])
+  @UseMiddleware(isAuth)
+  async getWorkoutsInOrg(@Ctx() context: MyContext) {
+    const org = await this.getOrganization(context);
+    const workouts = await Workout.find({
+      where: {
+        organization: {
+          id: org.id,
+        },
+      },
+    });
+
+    if (workouts) {
+      return workouts;
+    }
+    return null;
+  }
+
   @Query(() => [Team])
   @UseMiddleware(isAuth)
   async getTeamsInOrg(@Ctx() context: MyContext) {
