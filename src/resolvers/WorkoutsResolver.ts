@@ -165,7 +165,7 @@ export class WorkoutResolver {
   }
 
   @Query(() => Workout)
-  async getWorkout(@Arg("workoutId") workoutId: string) {
+  async getWorkout(@Arg("workoutId") workoutId: number) {
     const workout = await Workout.findOne({
       where: {
         id: workoutId,
