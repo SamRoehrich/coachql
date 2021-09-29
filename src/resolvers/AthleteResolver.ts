@@ -66,6 +66,16 @@ export class AthleteResolver {
     return team;
   }
 
+  @FieldResolver()
+  async sessions(@Root() athlete: Athlete) {
+    const sessions = await getConnection()
+      .createQueryBuilder()
+      .relation(Athlete, "sessions")
+      .of(athlete)
+      .loadMany();
+    return sessions;
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async addAthleteToTeam(

@@ -24,6 +24,7 @@ import { RunningOrderResolver } from "./resolvers/RunningOrderResolver";
 import { WorkoutResolver } from "./resolvers/WorkoutsResolver";
 import { OrganizationResolver } from "./resolvers/OrganizationResolver";
 import { CoachResolver } from "./resolvers/CoachResolver";
+import { SessionResolver } from "./resolvers/SessionResolver";
 
 (async () => {
   const app = express();
@@ -169,6 +170,7 @@ import { CoachResolver } from "./resolvers/CoachResolver";
         WorkoutResolver,
         OrganizationResolver,
         CoachResolver,
+        SessionResolver,
       ],
     }),
     context: ({ req, res }) => ({ req, res }),

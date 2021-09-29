@@ -7,12 +7,15 @@ import {
   JoinColumn,
   OneToOne,
   ManyToOne,
+  ManyToMany,
+  JoinTable,
 } from "typeorm";
 import { Gender } from "./Stack";
 import { User } from "./User";
 import { Organization } from "./Organization";
 import { Team } from "./Team";
 import { TrainingPlan } from "./TrainingPlan";
+import { Session } from "./Session";
 
 @ObjectType()
 @Entity("athletes")
@@ -59,4 +62,9 @@ export class Athlete extends BaseEntity {
   @Field()
   @ManyToOne(() => TrainingPlan)
   trainingPlan: TrainingPlan;
+
+  @Field(() => [Session])
+  @ManyToMany(() => Session)
+  @JoinTable()
+  sessions: Session[];
 }
