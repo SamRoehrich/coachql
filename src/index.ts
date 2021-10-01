@@ -36,6 +36,8 @@ import { SessionResolver } from "./resolvers/SessionResolver";
     })
   );
 
+  app.get("/", (_, res) => res.send("Navigate to /graphql."));
+
   app.post("/refresh_token", async (req, res) => {
     console.log("refresh called");
     console.log(req.cookies);
@@ -177,7 +179,7 @@ import { SessionResolver } from "./resolvers/SessionResolver";
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
-  app.listen(4000, () => {
+  app.listen(process.env.PORT || 4000, () => {
     console.log("Server running @ http://loaclhost:4000/graphql");
   });
 })();
