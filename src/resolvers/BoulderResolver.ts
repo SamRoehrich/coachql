@@ -48,7 +48,7 @@ export class BoulderResolver {
     @Arg("stackId") stack: number,
     @Arg("boulderNumber") boulderNumber: number
   ) {
-    const boulder = Boulder.insert({ stack, boulderNumber });
+    const boulder = await Boulder.insert({ stack, boulderNumber });
     if (boulder) {
       return true;
     } else {
