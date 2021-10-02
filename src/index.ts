@@ -160,6 +160,7 @@ import { SessionResolver } from "./resolvers/SessionResolver";
 
   const apolloServer = new ApolloServer({
     tracing: true,
+    introspection: true,
     schema: await buildSchema({
       resolvers: [
         UserResolver,
