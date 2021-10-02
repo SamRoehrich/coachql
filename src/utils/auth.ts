@@ -23,6 +23,7 @@ export const createRefreshToken = (user: User) => {
 
 export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
   const authorization = context.req.headers["authorization"];
+  console.log(authorization);
 
   if (!authorization) {
     throw new Error("not authenticated");
