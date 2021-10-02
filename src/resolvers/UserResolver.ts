@@ -44,7 +44,7 @@ export class UserResolver {
   @UseMiddleware(isAuth)
   async me(@Ctx() context: MyContext) {
     const authorization = context.req.headers["authorization"];
-
+    console.log("me called");
     if (!authorization) {
       return null;
     }
