@@ -38,6 +38,33 @@ import { SessionResolver } from "./resolvers/SessionResolver";
 
   app.get("/", (_, res) => res.send("Navigate to /graphql."));
 
+  app.post("/refresh_mobile_token", async (req, res) => {
+    const token = req.headers.authorization;
+    console.log(token);
+    if (!token) {
+      res.send({ ok: false, accessToken: "" });
+    }
+
+    let payload: any = null;
+
+    try {
+      payload = verify(token!.toString(), process.env.REFRESH_TOKEN_SECRET!);
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+
+    const user = await User.findOne({ id: payload.userId });
+    if (!user) {
+      return res.send({ ok: false, accessToken: "" });
+    }
+    if (user.tokenVersion !== payload.tokenVersion) {
+      return res.send({ ok: false, accessToken: "" });
+    }
+    sendRefreshToken(res, createRefreshToken(user));
+    return res.send({ ok: true, accessToken: createAccessToken(user) });
+  });
+
   app.post("/refresh_token", async (req, res) => {
     console.log("refresh called");
     console.log(req.cookies);
