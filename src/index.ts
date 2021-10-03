@@ -39,16 +39,17 @@ import { SessionResolver } from "./resolvers/SessionResolver";
   app.get("/", (_, res) => res.send("Navigate to /graphql."));
 
   app.post("/refresh_mobile_token", async (req, res) => {
-    const token = req.headers.authorization;
-    console.log(token);
-    if (!token) {
+    const authorization = req.headers.authorization;
+    console.log(authorization);
+    if (!authorization) {
       res.send({ ok: false, accessToken: "" });
     }
 
     let payload: any = null;
 
     try {
-      payload = verify(token!.toString(), process.env.REFRESH_TOKEN_SECRET!);
+      const token = authorization!.split(" ")[1];
+      payload = verify(token, process.env.REFRESH_TOKEN_SECRET!);
     } catch (err) {
       console.log(err);
       return false;
