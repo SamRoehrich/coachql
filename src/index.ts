@@ -47,23 +47,28 @@ import { SessionResolver } from "./resolvers/SessionResolver";
 
     let payload: any = null;
 
-    try {
-      const token = authorization!.split(" ")[1];
-      payload = verify(token, process.env.REFRESH_TOKEN_SECRET!);
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
+    if (authorization) {
+      try {
+        const token = authorization.split(" ")[1];
+        console.log("token" + token);
+        payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+      } catch (err) {
+        console.log(err);
+        return false;
+      }
 
-    const user = await User.findOne({ id: payload.userId });
-    if (!user) {
-      return res.send({ ok: false, accessToken: "" });
+      console.log(payload);
+
+      const user = await User.findOne({ id: payload.userId });
+      if (!user) {
+        console.log("no user");
+        return res.send({ ok: false, accessToken: "" });
+      }
+      sendRefreshToken(res, createRefreshToken(user));
+      return res.send({ ok: true, accessToken: createAccessToken(user) });
+    } else {
+      return res.send({ ok: false, accessToken: "dsafasdfds" });
     }
-    if (user.tokenVersion !== payload.tokenVersion) {
-      return res.send({ ok: false, accessToken: "" });
-    }
-    sendRefreshToken(res, createRefreshToken(user));
-    return res.send({ ok: true, accessToken: createAccessToken(user) });
   });
 
   app.post("/refresh_token", async (req, res) => {
