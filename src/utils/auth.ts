@@ -23,6 +23,7 @@ export const createRefreshToken = (user: User) => {
 
 export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
   const authorization = context.req.headers["authorization"];
+  console.log(context.req.headers);
   console.log(authorization + "is auth");
 
   if (!authorization) {
