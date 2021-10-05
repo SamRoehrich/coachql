@@ -48,8 +48,11 @@ import { SessionResolver } from "./resolvers/SessionResolver";
     let payload: any = null;
 
     if (authorization) {
+      const token = authorization.split(" ")[1];
+      if (!token) {
+        res.send({ ok: false, accessToken: "" });
+      }
       try {
-        const token = authorization.split(" ")[1];
         console.log("token" + token);
         payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
       } catch (err) {
