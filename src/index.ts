@@ -50,7 +50,7 @@ import { SessionResolver } from "./resolvers/SessionResolver";
     if (authorization) {
       const token = authorization.split(" ")[1];
       if (!token) {
-        res.send({ ok: false, accessToken: "" });
+        res.send({ ok: false, token: "" });
       }
       try {
         console.log("token" + token);
