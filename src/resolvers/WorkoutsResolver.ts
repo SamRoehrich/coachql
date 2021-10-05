@@ -60,6 +60,40 @@ export class WorkoutResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
+  async editWorkout(
+    @Arg("name") name: string,
+    @Arg("sets") sets: string,
+    @Arg("description") description: string,
+    @Arg("workoutType") workoutType: string,
+    @Arg("equiptment") equiptment: string,
+    @Arg("numSets") numSets: number,
+    @Arg("recordClimbs") recordClimbs: boolean,
+    @Arg("notifications") notifications: boolean,
+    @Arg("id") id: number
+  ) {
+    const updateRes = await getConnection()
+      .createQueryBuilder()
+      .update(Workout)
+      .set({
+        name,
+        sets,
+        numSets,
+        notifications,
+        description,
+        workoutType,
+        equiptment,
+        recordClimbs,
+      })
+      .where("id = :id", { id })
+      .execute();
+    if (updateRes) {
+      return true;
+    }
+    return false;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
   async updateWorkoutDescription(
     @Arg("workoutId") workoutId: number,
     @Arg("description") description: string
