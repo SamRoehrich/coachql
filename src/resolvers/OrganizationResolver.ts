@@ -17,6 +17,7 @@ import { Workout } from "../entity/Workout";
 import { Athlete } from "../entity/Athlete";
 import { Team } from "../entity/Team";
 import { Coach } from "../entity/Coach";
+import { isInOrg } from "../utils/org";
 // import { Athlete } from "../entity/Athlete";
 
 @Resolver(() => Organization)
@@ -85,16 +86,15 @@ export class OrganizationResolver {
 
   @Query(() => [Workout])
   @UseMiddleware(isAuth)
+  @UseMiddleware(isInOrg)
   async getWorkoutsInOrg(@Ctx() context: MyContext) {
-    const org = await this.getOrganization(context);
     const workouts = await Workout.find({
       where: {
         organization: {
-          id: org.id,
+          id: context.org?.orgId,
         },
       },
     });
-
     if (workouts) {
       return workouts;
     }
