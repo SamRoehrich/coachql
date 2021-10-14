@@ -25,6 +25,7 @@ import { WorkoutResolver } from "./resolvers/WorkoutsResolver";
 import { OrganizationResolver } from "./resolvers/OrganizationResolver";
 import { CoachResolver } from "./resolvers/CoachResolver";
 import { SessionResolver } from "./resolvers/SessionResolver";
+import { AssessmentResolver } from "./resolvers/AssessmentResolver";
 
 (async () => {
   const app = express();
@@ -210,6 +211,7 @@ import { SessionResolver } from "./resolvers/SessionResolver";
         OrganizationResolver,
         CoachResolver,
         SessionResolver,
+        AssessmentResolver,
       ],
     }),
     context: ({ req, res }) => ({ req, res }),
