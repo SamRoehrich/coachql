@@ -87,7 +87,7 @@ import { SessionResolver } from "./resolvers/SessionResolver";
       payload = verify(token, process.env.REFRESH_TOKEN_SECRET!);
     } catch (err) {
       console.log(err);
-      return false;
+      return res.send({ ok: false, accessToken: "" });
     }
 
     const user = await User.findOne({ id: payload.userId });
