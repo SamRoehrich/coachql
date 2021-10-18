@@ -16,6 +16,7 @@ import { isAuth } from "../utils/auth";
 import { Team } from "../entity/Team";
 import { OrganizationResolver } from "./OrganizationResolver";
 import { MyContext } from "../types/MyContext";
+import { Session } from "../entity/Session";
 // import { getAgeCatagory } from "../utils/athlete";
 // import { isFemale } from "../utils/stack";
 
@@ -74,6 +75,24 @@ export class AthleteResolver {
       .of(athlete)
       .loadMany();
     return sessions;
+  }
+
+  @Query(() => [Session])
+  async getCompletedSessionsForAthlete(@Arg("athleteId") athleteId: string) {
+    const athlete = await Athlete.findOne({
+      where: {
+        id: Number.parseInt(athleteId),
+      },
+    });
+    if (athlete) {
+      const sessions = await getConnection()
+        .createQueryBuilder()
+        .relation(Athlete, "sessions")
+        .of(athleteId)
+        .loadMany();
+      return sessions;
+    }
+    return null;
   }
 
   @Mutation(() => Boolean)
