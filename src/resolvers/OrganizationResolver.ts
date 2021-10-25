@@ -69,16 +69,25 @@ export class OrganizationResolver {
   @Query(() => [Athlete])
   @UseMiddleware(isAuth)
   async getAthletesInOrg(@Ctx() context: MyContext) {
-    const org = await this.getOrganization(context);
-    const athletes = await Athlete.find({
-      where: {
-        organization: {
-          id: org.id,
-        },
-      },
-    });
+    const org: Organization = await this.getOrganization(context);
+    const athletes = await getRepository(Athlete)
+      .createQueryBuilder("athlete")
+      .where("athlete.organizationId = :orgId", { orgId: org.id })
+      .getMany();
     if (athletes.length > 0) {
-      return athletes;
+      for (let athlete of athletes) {
+        const user = await getConnection()
+          .createQueryBuilder()
+          .relation(Athlete, "user")
+          .of(athlete)
+          .loadOne();
+        if (user) {
+          athlete.user = user;
+        }
+      }
+      let sorted = [...athletes];
+      sorted.sort((a, b) => a.user.lastName.localeCompare(b.user.lastName));
+      return sorted;
     } else {
       return null;
     }
