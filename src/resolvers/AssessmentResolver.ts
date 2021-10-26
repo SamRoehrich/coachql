@@ -42,13 +42,15 @@ export class AssessmentResolver {
     @Arg("name") name: string,
     @Arg("description") description: string,
     @Arg("dataPoints") dataPoints: string,
-    @Arg("testMethod") testMethod: string
+    @Arg("tools") tools: string,
+    @Arg("type") type: string
   ) {
     const assessment = await Assessment.insert({
       name,
       description,
       dataPoints,
-      testMethod,
+      testMethod: tools,
+      assessmentType: type,
     });
     if (assessment && org) {
       await getConnection()

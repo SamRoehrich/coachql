@@ -34,4 +34,8 @@ export class Assessment extends BaseEntity {
   @Field()
   @Column()
   testMethod: string;
+
+  @Field()
+  @Column({ nullable: true })
+  assessmentType: string;
 }
