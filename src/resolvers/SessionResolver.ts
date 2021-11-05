@@ -3,11 +3,12 @@ import {
   Ctx,
   FieldResolver,
   Mutation,
+  Query,
   Resolver,
   Root,
   UseMiddleware,
 } from "type-graphql";
-import { getConnection } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
 import { Athlete } from "../entity/Athlete";
 import { Session } from "../entity/Session";
 import { Workout } from "../entity/Workout";
@@ -24,6 +25,12 @@ export class SessionResolver {
       .of(session)
       .loadOne();
     return workout;
+  }
+
+  @Query(() => Session)
+  @UseMiddleware(isAuth)
+  async getSessionById(@Arg("sessionId") sessionId: number) {
+    return await getRepository(Session).findOne(sessionId);
   }
 
   @Mutation(() => Boolean)
