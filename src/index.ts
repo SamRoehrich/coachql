@@ -33,7 +33,8 @@ import { AssessmentResolver } from "./resolvers/AssessmentResolver";
   app.use(
     cors({
       credentials: true,
-      origin: "*",
+      origin:
+        "https://6189ad7afd24630008b8afb8--elated-brown-522f33.netlify.app",
     })
   );
 
