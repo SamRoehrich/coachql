@@ -33,7 +33,7 @@ import { AssessmentResolver } from "./resolvers/AssessmentResolver";
   app.use(
     cors({
       credentials: true,
-      origin: "*",
+      origin: "http://localhost:3000",
     })
   );
 
