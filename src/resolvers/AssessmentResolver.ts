@@ -42,6 +42,13 @@ export class AssessmentResolver {
     }
   }
 
+  @Query(() => Assessment)
+  @UseMiddleware(isAuth)
+  @UseMiddleware(isInOrg)
+  async getAssessmentById(@Arg("assessmentId") assessmentId: number) {
+    return await getRepository(Assessment).findOne(assessmentId);
+  }
+
   @Query(() => [Assessment])
   async getAssessments() {
     const assessments = await Assessment.find();
