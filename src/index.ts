@@ -26,6 +26,7 @@ import { OrganizationResolver } from "./resolvers/OrganizationResolver";
 import { CoachResolver } from "./resolvers/CoachResolver";
 import { SessionResolver } from "./resolvers/SessionResolver";
 import { AssessmentResolver } from "./resolvers/AssessmentResolver";
+import { RecordResolver } from "./resolvers/RecordResolver";
 
 (async () => {
   const app = express();
@@ -33,7 +34,11 @@ import { AssessmentResolver } from "./resolvers/AssessmentResolver";
   app.use(
     cors({
       credentials: true,
+<<<<<<< HEAD
       origin: "https://www.coachql.com",
+=======
+      origin: "http://localhost:3000",
+>>>>>>> main
     })
   );
 
@@ -212,6 +217,7 @@ import { AssessmentResolver } from "./resolvers/AssessmentResolver";
         CoachResolver,
         SessionResolver,
         AssessmentResolver,
+        RecordResolver,
       ],
     }),
     context: ({ req, res }) => ({ req, res }),
