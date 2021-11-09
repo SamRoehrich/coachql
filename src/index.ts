@@ -34,11 +34,7 @@ import { RecordResolver } from "./resolvers/RecordResolver";
   app.use(
     cors({
       credentials: true,
-<<<<<<< HEAD
       origin: "https://www.coachql.com",
-=======
-      origin: "http://localhost:3000",
->>>>>>> main
     })
   );
 
