@@ -12,6 +12,7 @@ import { Assessment } from "../entity/Assessment";
 import { Athlete } from "../entity/Athlete";
 import { Record } from "../entity/Record";
 import { isAuth } from "../utils/auth";
+import { isInOrg } from "../utils/org";
 
 @Resolver(() => Record)
 export class RecordResolver {
@@ -65,5 +66,19 @@ export class RecordResolver {
   @UseMiddleware(isAuth)
   async getRecords() {
     return await Record.find();
+  }
+
+  @Query(() => [Record])
+  @UseMiddleware(isAuth)
+  @UseMiddleware(isInOrg)
+  async getRecordsByAssessmentId(@Arg("assessmentId") assessmentId: number) {
+    const records = await getRepository(Record).find({
+      where: {
+        assessment: {
+          id: assessmentId,
+        },
+      },
+    });
+    return records;
   }
 }
