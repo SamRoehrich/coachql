@@ -78,6 +78,36 @@ export class AssessmentResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   @UseMiddleware(isInOrg)
+  async editAssessment(
+    @Arg("assessmentId") assessmentId: number,
+    @Arg("name") name: string,
+    @Arg("description") description: string,
+    @Arg("dataPoints") dataPoints: string,
+    @Arg("tools") tools: string,
+    @Arg("type") type: string
+  ) {
+    const edit = await getConnection()
+      .createQueryBuilder()
+      .update(Assessment)
+      .set({
+        name,
+        dataPoints,
+        description,
+        testMethod: tools,
+        assessmentType: type,
+      })
+      .where("id = :id", { id: assessmentId })
+      .execute();
+    if (edit) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  @UseMiddleware(isInOrg)
   async createAssessment(
     @Ctx() { org }: MyContext,
     @Arg("name") name: string,
